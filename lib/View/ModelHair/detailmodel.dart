@@ -261,10 +261,7 @@ class _DetailModelState extends State<DetailModel> {
                     ),
                   ),
                   onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => BottomNav()),
-                        (route) => false);
+                    Navigator.of(context).pop();
                   },
                 ),
               ),
