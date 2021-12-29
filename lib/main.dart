@@ -19,7 +19,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: Splashscreen(title: 'Flutter Demo Home Page'),
-
       builder: EasyLoading.init(),
     );
   }

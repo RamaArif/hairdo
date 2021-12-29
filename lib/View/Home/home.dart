@@ -5,6 +5,7 @@ import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
 import 'package:omahdilit/Api/homeapi.dart';
 import 'package:omahdilit/Module/homeHair.dart';
 import 'package:omahdilit/Module/homefavorite.dart';
+import 'package:omahdilit/View/ModelHair/allmodel.dart';
 import 'package:omahdilit/View/Search/search.dart';
 import 'package:omahdilit/constant.dart';
 import 'package:omahdilit/model/listmitra.dart';
@@ -29,7 +30,6 @@ class _HomeState extends State<Home> {
       updatedAt: "2021-09-04 22:29:26",
     ),
   );
-
 
   @override
   void initState() {
@@ -159,11 +159,12 @@ class _HomeState extends State<Home> {
                                     left: marginHorizontal,
                                   ),
                                   child: new DotSwiperPaginationBuilder(
-                                    color: Colors.grey.shade400,
-                                    activeColor: primary,
-                                    size: 10.0,
-                                    activeSize: 13.0,
-                                  ).build(context, config),
+                                          color: Colors.grey.shade400,
+                                          activeColor: primary,
+                                          size: 10.0,
+                                          activeSize: 10.0,
+                                          space: 2)
+                                      .build(context, config),
                                 ),
                               ),
                             )
@@ -229,13 +230,21 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
-                    Text(
-                      "Lihat Semua",
-                      style: TextStyle(
-                        color: primary,
-                        fontSize: tinggi / lebar * 7,
-                        fontWeight: FontWeight.w500,
+                    InkWell(
+                      child: Text(
+                        "Lihat Semua",
+                        style: TextStyle(
+                          color: primary,
+                          fontSize: tinggi / lebar * 7,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AllModelHair()));
+                      },
                     )
                   ],
                 ),

@@ -38,10 +38,8 @@ class _HomeHairState extends State<HomeHair> {
         return InkWell(
           onTap: () => Navigator.push(
             context,
-            CupertinoPageRoute(
-              builder: (_) => DetailModel(
-                modelHair: _listHair[index],
-              ),
+            MaterialPageRoute(
+              builder: (_) => DetailModel(),
             ),
           ),
           child: Container(

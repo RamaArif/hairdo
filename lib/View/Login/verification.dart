@@ -59,6 +59,39 @@ class verificationState extends State<verification> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomSheet: Container(
+        height: tinggi / 10,
+        child: Column(
+          children: [
+            Container(
+              width: lebar,
+              alignment: Alignment.center,
+              child: Text("Nomor Telepon Salah ?"),
+            ),
+            Container(
+              width: lebar,
+              alignment: Alignment.center,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (_) => Login(),
+                      ),
+                      (route) => false);
+                },
+                child: Text(
+                  "Ubah Nomor",
+                  style: TextStyle(
+                    color: primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
       body: SafeArea(
         child: Container(
           width: lebar,
@@ -150,32 +183,6 @@ class verificationState extends State<verification> {
               SizedBox(
                 height: tinggi / 2.5,
               ),
-              Container(
-                width: lebar,
-                alignment: Alignment.center,
-                child: Text("Nomor Telepon Salah ?"),
-              ),
-              Container(
-                width: lebar,
-                alignment: Alignment.center,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (_) => Login(),
-                        ),
-                        (route) => false);
-                  },
-                  child: Text(
-                    "Ubah Nomor",
-                    style: TextStyle(
-                      color: primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              )
             ],
           ),
         ),
