@@ -6,7 +6,7 @@ class ListMitra {
 
   ListMitra.fromJson(Map<String, dynamic> json) {
     if (json['mitra'] != null) {
-      mitra =  [];
+      mitra = [];
       json['mitra'].forEach((v) {
         mitra!.add(new Mitra.fromJson(v));
       });
@@ -35,8 +35,10 @@ class Mitra {
   String? pushtoken;
   String? photo;
   String? status;
+  String? workshop;
   double? lat;
   double? lng;
+  double? rating;
   String? createdAt;
   String? updatedAt;
 
@@ -51,8 +53,10 @@ class Mitra {
       this.pushtoken,
       this.photo,
       this.status,
+      this.workshop,
       this.lat,
       this.lng,
+      this.rating,
       this.createdAt,
       this.updatedAt});
 
@@ -67,8 +71,10 @@ class Mitra {
     pushtoken = json['pushtoken'];
     photo = json['photo'];
     status = json['status'];
+    workshop = json['workshop'];
     lat = json['lat'];
     lng = json['lng'];
+    rating = json['rating'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -85,8 +91,10 @@ class Mitra {
     data['pushtoken'] = this.pushtoken;
     data['photo'] = this.photo;
     data['status'] = this.status;
+    data['workshop'] = this.workshop;
     data['lat'] = this.lat;
     data['lng'] = this.lng;
+    data['rating'] = this.rating;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     return data;

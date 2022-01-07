@@ -7,7 +7,8 @@ class ModelHair {
   String? kategori;
   String? jenisModel;
   String? detail;
-  double? rating;
+  int? rating;
+  int? totalreview;
   String? createdAt;
   String? updatedAt;
 
@@ -21,6 +22,7 @@ class ModelHair {
       this.jenisModel,
       this.detail,
       this.rating,
+      this.totalreview,
       this.createdAt,
       this.updatedAt});
 
@@ -34,6 +36,7 @@ class ModelHair {
     jenisModel = json['jenis_model'];
     detail = json['detail'];
     rating = json['rating'];
+    totalreview = json['totalreview'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -49,6 +52,7 @@ class ModelHair {
     data['jenis_model'] = this.jenisModel;
     data['detail'] = this.detail;
     data['rating'] = this.rating;
+    data['totalreview'] = this.totalreview;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     return data;

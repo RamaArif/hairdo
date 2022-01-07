@@ -111,7 +111,7 @@ class _LoginState extends State<Login> {
                     child: Row(
                       children: [
                         Container(
-                          height: tinggi / 14.5,
+                          height: tinggi / 12,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
                               color: greyBackground),
@@ -136,28 +136,31 @@ class _LoginState extends State<Login> {
                           width: lebar / 30,
                         ),
                         Expanded(
-                          child: TextFormField(
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.digitsOnly,
-                              LengthLimitingTextInputFormatter(12)
-                            ],
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: tinggi / lebar * 8,
-                            ),
-                            decoration: InputDecoration(
-                                hintText: "Nomor Telepon",
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    width: 0,
-                                    style: BorderStyle.none,
+                          child: Container(
+                            height: tinggi / 12,
+                            child: TextFormField(
+                              keyboardType: TextInputType.number,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(12)
+                              ],
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: tinggi / lebar * 8,
+                              ),
+                              decoration: InputDecoration(
+                                  hintText: "Nomor Telepon",
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      width: 0,
+                                      style: BorderStyle.none,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                filled: true,
-                                fillColor: greyBackground),
-                            controller: _phoneController,
+                                  filled: true,
+                                  fillColor: greyBackground),
+                              controller: _phoneController,
+                            ),
                           ),
                         )
                       ],
@@ -183,7 +186,7 @@ class _LoginState extends State<Login> {
                                 ),
                               ),
                             ),
-                            TextSpan(text: " yang berlaku di OmahDilit"),
+                            TextSpan(text: " yang berlaku di Hairdo"),
                           ]),
                     ),
                   ),

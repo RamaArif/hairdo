@@ -36,6 +36,7 @@ class _BottomNavState extends State<BottomNav> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+          backgroundColor: Colors.white,
           body: _children.elementAt(_currentIndex),
           bottomNavigationBar: SalomonBottomBar(
             margin: EdgeInsets.symmetric(horizontal: marginHorizontal),

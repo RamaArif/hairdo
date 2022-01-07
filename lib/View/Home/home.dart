@@ -5,6 +5,7 @@ import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
 import 'package:omahdilit/Api/homeapi.dart';
 import 'package:omahdilit/Module/homeHair.dart';
 import 'package:omahdilit/Module/homefavorite.dart';
+import 'package:omahdilit/View/Barberman/allBarberman.dart';
 import 'package:omahdilit/View/ModelHair/allmodel.dart';
 import 'package:omahdilit/View/Search/search.dart';
 import 'package:omahdilit/constant.dart';
@@ -180,23 +181,47 @@ class _HomeState extends State<Home> {
               SizedBox(
                 height: tinggi / 60,
               ),
-              Container(
-                margin: EdgeInsets.only(left: marginHorizontal),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Mitra Omah Dilit",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: tinggi / lebar * 9,
+              Padding(
+                padding: EdgeInsets.only(
+                    left: marginHorizontal,
+                    right: marginHorizontal,
+                    bottom: marginVertical / 2),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      child: Text(
+                        "Model Rambut",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: tinggi / lebar * 9,
+                        ),
+                      ),
                     ),
-                  ),
+                    InkWell(
+                      child: Text(
+                        "Lihat Semua",
+                        style: TextStyle(
+                          color: primary,
+                          fontSize: tinggi / lebar * 7,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (_) => AllBarberman(),
+                          ),
+                        );
+                      },
+                    )
+                  ],
                 ),
               ),
               Container(
                 margin: EdgeInsets.symmetric(
                   horizontal: marginHorizontal,
-                  vertical: marginVertical / 10,
                 ),
                 child: Align(
                   alignment: Alignment.centerLeft,

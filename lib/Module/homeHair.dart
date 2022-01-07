@@ -17,16 +17,18 @@ class _HomeHairState extends State<HomeHair> {
   var _listHair = List<ModelHair>.generate(
     5,
     (index) => ModelHair(
-        id: index,
-        namaModel: "Komahead",
-        photo1: "model.png",
-        photo2: "model.png",
-        photo3: "model.png",
-        kategori: "Laki-Laki",
-        jenisModel: "Fade",
-        detail:
-            "model undercut tidak ada degradasi entah itu rambut dicukur botak, 1 cm dan 2 cm yang paling penting adalah mempunyai panjang yang sama tanpa degradasi memudar.",
-        rating: new Random().nextDouble() * (5 - 1) + 1),
+      id: index,
+      namaModel: "Undercut",
+      photo1: "model.png",
+      photo2: "model.png",
+      photo3: "model.png",
+      kategori: "Laki-Laki",
+      jenisModel: "Fade",
+      detail:
+          "Model undercut tidak ada degradasi entah itu rambut dicukur botak, 1 cm dan 2 cm yang paling penting adalah mempunyai panjang yang sama tanpa degradasi memudar.",
+      rating: new Random().nextInt(100),
+      totalreview: new Random().nextInt(100),
+    ),
   );
 
   @override
@@ -39,7 +41,10 @@ class _HomeHairState extends State<HomeHair> {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => DetailModel(),
+              builder: (_) => DetailModel(
+                modelhair: _listHair[index],
+                isEdit: false,
+              ),
             ),
           ),
           child: Container(
@@ -79,7 +84,7 @@ class _HomeHairState extends State<HomeHair> {
                   ),
                 ),
                 SizedBox(
-                  height: tinggi / 8.5,
+                  height: tinggi / 9,
                 ),
                 Container(
                   margin: EdgeInsets.symmetric(
@@ -91,7 +96,7 @@ class _HomeHairState extends State<HomeHair> {
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
-                        fontSize: tinggi / lebar * 7),
+                        fontSize: tinggi / lebar * 8),
                   ),
                 ),
                 Container(
@@ -112,16 +117,19 @@ class _HomeHairState extends State<HomeHair> {
                       Row(
                         children: [
                           Icon(
-                            Icons.star,
-                            color: Colors.amber,
+                            Icons.thumb_up,
+                            color: Colors.white,
                             size: lebar / 23,
                           ),
-                          Text(
-                            _listHair[index].rating!.toStringAsFixed(1),
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                                fontSize: tinggi / lebar * 7),
+                          Container(
+                            margin: EdgeInsets.only(left: marginHorizontal / 3),
+                            child: Text(
+                              _listHair[index].rating!.toString() + "%",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white,
+                                  fontSize: tinggi / lebar * 7),
+                            ),
                           ),
                         ],
                       ),
