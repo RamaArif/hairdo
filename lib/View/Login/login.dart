@@ -63,7 +63,9 @@ class _LoginState extends State<Login> {
               height: tinggi / 1.12,
               width: lebar,
               padding: EdgeInsets.symmetric(
-                  horizontal: marginHorizontal, vertical: marginVertical),
+                horizontal: marginHorizontal,
+                vertical: marginVertical * 2,
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,

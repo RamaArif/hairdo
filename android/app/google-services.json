@@ -1,0 +1,117 @@
+{
+  "project_info": {
+    "project_number": "1090730333265",
+    "firebase_url": "https://omahdilit.firebaseio.com",
+    "project_id": "omahdilit",
+    "storage_bucket": "omahdilit.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1090730333265:android:783d205aa85f5eaf8a5470",
+        "android_client_info": {
+          "package_name": "com.devert.omahdilit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1090730333265-hqlljk8ovpp2hk1lhvr789o8er2av4pa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.devert.omahdilit",
+            "certificate_hash": "9d59e9281128e7c9daea8548765198f37767467d"
+          }
+        },
+        {
+          "client_id": "1090730333265-hsb4jelmjpjvshebm68juf8muipleta4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.devert.omahdilit",
+            "certificate_hash": "20a8d993711986c78f36ba9596997eed702a7a59"
+          }
+        },
+        {
+          "client_id": "1090730333265-uc95fbssv8km8sqbag44o4s7a22j7mmg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.devert.omahdilit",
+            "certificate_hash": "b15a85a4086ad054c0004e7ad56ec8d094c05def"
+          }
+        },
+        {
+          "client_id": "1090730333265-j6hc37edtcvgo3m6o3itna2lo5s745o3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD25DrzXsR4flKr6TYaBDBqlaacPntxmr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1090730333265-j6hc37edtcvgo3m6o3itna2lo5s745o3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1090730333265:android:0bed0ada5ae246098a5470",
+        "android_client_info": {
+          "package_name": "com.devert.omahdilitbarber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1090730333265-6kcmpkmdkonqksklb9d0tomi34h95ema.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.devert.omahdilitbarber",
+            "certificate_hash": "20a8d993711986c78f36ba9596997eed702a7a59"
+          }
+        },
+        {
+          "client_id": "1090730333265-mfkaqt51b20pf175gr1lgqn5eun105q4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.devert.omahdilitbarber",
+            "certificate_hash": "b15a85a4086ad054c0004e7ad56ec8d094c05def"
+          }
+        },
+        {
+          "client_id": "1090730333265-vm2edvpms462np5eugf93rao7qhr70io.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.devert.omahdilitbarber",
+            "certificate_hash": "16e7fc19b09218733b5865f84f4ebccc4e6f0d4d"
+          }
+        },
+        {
+          "client_id": "1090730333265-j6hc37edtcvgo3m6o3itna2lo5s745o3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD25DrzXsR4flKr6TYaBDBqlaacPntxmr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1090730333265-j6hc37edtcvgo3m6o3itna2lo5s745o3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

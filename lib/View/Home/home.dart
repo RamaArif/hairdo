@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
-import 'package:omahdilit/Api/homeapi.dart';
+import 'package:omahdilit/Api/api_provider.dart';
 import 'package:omahdilit/Module/homeHair.dart';
 import 'package:omahdilit/Module/homefavorite.dart';
 import 'package:omahdilit/View/Barberman/allBarberman.dart';

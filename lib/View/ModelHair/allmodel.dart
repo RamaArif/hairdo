@@ -68,7 +68,7 @@ class _AllModelHairState extends State<AllModelHair>
     super.initState();
     _tabController = new TabController(vsync: this, length: tabs.length);
     _scrollController = new ScrollController(initialScrollOffset: 5.0);
-    if (widget.isEdit) {
+    if (widget.isEdit != null) {
       _isEdit = true;
     }
   }

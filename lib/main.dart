@@ -1,10 +1,19 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:omahdilit/View/Login/login.dart';
+import 'package:omahdilit/View/Login/register.dart';
 import 'package:omahdilit/constant.dart';
+import 'package:omahdilit/firebase_options.dart';
+import 'package:omahdilit/navbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 
@@ -36,9 +45,20 @@ class Splashscreen extends StatefulWidget {
 class _SplashscreenState extends State<Splashscreen> {
   @override
   void initState() {
-    Future.delayed(Duration(milliseconds: 3000)).then((value) =>
-        Navigator.pushAndRemoveUntil(context,
-            CupertinoPageRoute(builder: (_) => Login()), (route) => false));
+    Future.delayed(Duration(milliseconds: 3000)).then((value) async {
+
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if(sharedPreferences.getString("uid")!=null&&sharedPreferences.getBool("loggedIn")==true){
+      Navigator.pushAndRemoveUntil(context,
+          CupertinoPageRoute(builder: (_) => BottomNav()), (route) => false);
+    } else if(sharedPreferences.getString("uid")==null&&sharedPreferences.getBool("loggedIn")==true){
+      Navigator.pushAndRemoveUntil(context,
+          CupertinoPageRoute(builder: (_) => Register()), (route) => false);
+    }else{
+      Navigator.pushAndRemoveUntil(context,
+          CupertinoPageRoute(builder: (_) => Login()), (route) => false);
+    }
+    });
     super.initState();
   }
 

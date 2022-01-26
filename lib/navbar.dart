@@ -35,6 +35,9 @@ class _BottomNavState extends State<BottomNav> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      minimum: EdgeInsets.only(
+        bottom: marginHorizontal / 2,
+      ),
       child: Scaffold(
           backgroundColor: Colors.white,
           body: _children.elementAt(_currentIndex),
