@@ -18,6 +18,9 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -43,15 +46,17 @@ class Splashscreen extends StatefulWidget {
 }
 
 class _SplashscreenState extends State<Splashscreen> {
+
   @override
   void initState() {
+
     Future.delayed(Duration(milliseconds: 3000)).then((value) async {
 
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    if(sharedPreferences.getString("uid")!=null&&sharedPreferences.getBool("loggedIn")==true){
+    if(sharedPreferences.getString("user")!=null&&sharedPreferences.getBool("loggedIn")==true){
       Navigator.pushAndRemoveUntil(context,
           CupertinoPageRoute(builder: (_) => BottomNav()), (route) => false);
-    } else if(sharedPreferences.getString("uid")==null&&sharedPreferences.getBool("loggedIn")==true){
+    } else if(sharedPreferences.getString("user")==null&&sharedPreferences.getBool("loggedIn")==true){
       Navigator.pushAndRemoveUntil(context,
           CupertinoPageRoute(builder: (_) => Register()), (route) => false);
     }else{
@@ -64,8 +69,10 @@ class _SplashscreenState extends State<Splashscreen> {
 
   @override
   Widget build(BuildContext context) {
+    
     tinggi = MediaQuery.of(context).size.height;
     lebar = MediaQuery.of(context).size.width;
+
     marginHorizontal = lebar / 20;
     marginVertical = tinggi / 50;
     return Scaffold(

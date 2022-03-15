@@ -7,7 +7,7 @@
 
 
    <application
-        android:label="omahdilit"
+        android:label="Hairdo.yu"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

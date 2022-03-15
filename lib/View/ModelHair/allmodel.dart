@@ -1,9 +1,12 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:omahdilit/Api/api_provider.dart';
 import 'package:omahdilit/constant.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
+import 'package:omahdilit/model/listmodelrambut.dart';
 import 'package:omahdilit/model/modelhair.dart';
 
 import 'detailmodel.dart';
@@ -22,6 +25,7 @@ class _AllModelHairState extends State<AllModelHair>
   TabController? _tabController;
   late ScrollController _scrollController;
   late bool _isEdit = false;
+
   final List<Tab> tabs = <Tab>[
     new Tab(
       child: Container(
@@ -45,22 +49,19 @@ class _AllModelHairState extends State<AllModelHair>
     ),
   ];
 
-  var _listHair = List<ModelHair>.generate(
-    10,
-    (index) => ModelHair(
-      id: index,
-      namaModel: "Undercut " + index.toString(),
-      photo1: "model.png",
-      photo2: "model.png",
-      photo3: "model.png",
-      kategori: "Laki-Laki",
-      jenisModel: "Fade",
-      detail:
-          "Model undercut tidak ada degradasi entah itu rambut dicukur botak, 1 cm dan 2 cm yang paling penting adalah mempunyai panjang yang sama tanpa degradasi memudar.",
-      rating: new Random().nextInt(100),
-      totalreview: new Random().nextInt(100),
-    ),
-  );
+  // var _listHair = List<ModelHair>.generate(
+  //   10,
+  //   (index) => ModelHair(
+  //       id: index,
+  //       namaModel: "Undercut " + index.toString(),
+  //       photo1: "model.png",
+  //       photo2: "model.png",
+  //       photo3: "model.png",
+  //       kategori: "Laki-Laki",
+  //       jenisModel: "Fade",
+  //       detail:
+  //           "Model undercut tidak ada degradasi entah itu rambut dicukur botak, 1 cm dan 2 cm yang paling penting adalah mempunyai panjang yang sama tanpa degradasi memudar."),
+  // );
 
   @override
   void initState() {
@@ -177,26 +178,47 @@ class _AllModelHairState extends State<AllModelHair>
                 )),
           ),
           SafeArea(
-              bottom: true,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: tinggi),
-                child: TabBarView(
-                    controller: _tabController,
-                    children: <Widget>[konten(), konten()]),
-              ))
+            bottom: true,
+            child: FutureBuilder<ListModelRambut>(
+              future: ApiProvider().fetchModel(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  ListModelRambut _list = snapshot.data!;
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: tinggi),
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: <Widget>[
+                        konten(_list.modelCowok),
+                        konten(_list.modelCewek),
+                      ],
+                    ),
+                  );
+                } else {
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: tinggi),
+                    child: TabBarView(
+                        controller: _tabController,
+                        children: <Widget>[kontenLoading(), kontenLoading()]),
+                  );
+                }
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget konten() {
+  Widget konten(List<ModelHair>? _listModel) {
     return GridView.builder(
-      itemCount: 10,
+      itemCount: _listModel!.length,
       controller: _scrollController,
       padding: EdgeInsets.only(bottom: 180),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           childAspectRatio: 0.9, crossAxisCount: 2),
       itemBuilder: (BuildContext context, int index) {
+        ModelHair _modelhair = _listModel[index];
         return InkWell(
           onTap: () {
             if (!_isEdit) {
@@ -204,7 +226,7 @@ class _AllModelHairState extends State<AllModelHair>
                 context,
                 MaterialPageRoute(
                   builder: (_) => DetailModel(
-                    modelhair: _listHair[index],
+                    modelhair: _modelhair,
                     isEdit: _isEdit,
                   ),
                 ),
@@ -212,7 +234,7 @@ class _AllModelHairState extends State<AllModelHair>
             } else {
               _awaitChangeModelHair(
                 context,
-                _listHair[index],
+                _listModel[index],
               );
             }
           },
@@ -226,9 +248,9 @@ class _AllModelHairState extends State<AllModelHair>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               image: DecorationImage(
-                fit: BoxFit.fill,
-                image: AssetImage(
-                  "assets/${_listHair[index].photo1}",
+                fit: BoxFit.cover,
+                image: CachedNetworkImageProvider(
+                  "https://omahdilit.my.id/images/" + _modelhair.photo1!,
                 ),
               ),
             ),
@@ -254,59 +276,44 @@ class _AllModelHairState extends State<AllModelHair>
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: tinggi / 9,
+                Expanded(
+                  child: SizedBox(),
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(
+                  padding: EdgeInsets.symmetric(
                     horizontal: marginHorizontal,
+                    vertical: marginVertical / 3,
                   ),
-                  child: Text(
-                    "${_listHair[index].namaModel}",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        fontSize: tinggi / lebar * 8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(.3),
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(12),
+                    ),
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(
-                    horizontal: marginHorizontal,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  width: lebar,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _listHair[index].jenisModel.toString(),
+                        "${_modelhair.namaModel}",
+                        textAlign: TextAlign.left,
+                        maxLines: 1,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            fontSize: tinggi / lebar * 8),
+                      ),
+                      Text(
+                        _modelhair.jenisModel.toString(),
                         textAlign: TextAlign.left,
                         style: TextStyle(
                             fontWeight: FontWeight.w300,
                             color: Colors.white,
                             fontSize: tinggi / lebar * 7),
                       ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.thumb_up,
-                            color: Colors.white,
-                            size: lebar / 23,
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(left: marginHorizontal / 2),
-                            child: Text(
-                              _listHair[index].rating!.toString() + "%",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white,
-                                  fontSize: tinggi / lebar * 7),
-                            ),
-                          ),
-                        ],
-                      ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -325,6 +332,31 @@ class _AllModelHairState extends State<AllModelHair>
         ),
       ),
     );
-    Navigator.pop(context, result);
+    if (result != null) {
+      Navigator.pop(context, result);
+    }
+  }
+
+  Widget kontenLoading() {
+    return GridView.builder(
+      itemCount: 10,
+      controller: _scrollController,
+      padding: EdgeInsets.only(bottom: 180),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          childAspectRatio: 0.9, crossAxisCount: 2),
+      itemBuilder: (BuildContext context, int index) {
+        return Container(
+          width: lebar / 2.35,
+          height: tinggi,
+          alignment: Alignment.centerLeft,
+          margin: EdgeInsets.symmetric(
+              horizontal: marginHorizontal / 1.5,
+              vertical: marginVertical / 1.7),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        );
+      },
+    );
   }
 }

@@ -17,10 +17,13 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       bottomSheet: Container(
         color: Colors.white,
         height: tinggi / 10,
-        padding: EdgeInsets.symmetric(vertical: marginVertical),
+        padding: EdgeInsets.symmetric(
+          vertical: marginVertical,
+        ),
         margin: EdgeInsets.only(bottom: marginVertical),
         child: MaterialButton(
           onPressed: () async {
@@ -41,13 +44,14 @@ class _ProfileState extends State<Profile> {
             decoration: BoxDecoration(
                 color: primary, borderRadius: BorderRadius.circular(10)),
             child: Center(
-                child: Text(
-              "Logout",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: tinggi / lebar * 7.5),
-            )),
+              child: Text(
+                "Logout",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: tinggi / lebar * 7.5),
+              ),
+            ),
           ),
         ),
       ),

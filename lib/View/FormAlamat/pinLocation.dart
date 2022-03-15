@@ -9,7 +9,11 @@ import 'package:map_picker/map_picker.dart';
 import '../../constant.dart';
 
 class PinLocation extends StatefulWidget {
-  const PinLocation({Key? key}) : super(key: key);
+  final LatLng? latLng;
+  const PinLocation({
+    Key? key,
+    this.latLng,
+  }) : super(key: key);
 
   @override
   _PinLocationState createState() => _PinLocationState();
@@ -20,12 +24,15 @@ class _PinLocationState extends State<PinLocation> {
   MapPickerController mapPickerController = MapPickerController();
   TextEditingController _textController = TextEditingController();
 
-  late LatLng currentLatLng = new LatLng(-7.2648849, 112.7458897);
+  LatLng currentLatLng = LatLng(-7.2648849, 112.7458897);
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    if (widget.latLng != null) {
+      currentLatLng = widget.latLng!;
+    }
     _awaitGetCurrentLocation();
   }
 
@@ -58,6 +65,7 @@ class _PinLocationState extends State<PinLocation> {
         color: blue,
         child: InkWell(
           onTap: () {
+            print(currentLatLng.toString());
             Navigator.pop(context, currentLatLng);
           },
           child: Center(
@@ -95,9 +103,10 @@ class _PinLocationState extends State<PinLocation> {
                   _textController.text = "checking ...";
                 },
                 onCameraMove: (cameraPosition) {
-                  this.currentLatLng = new LatLng(
-                      cameraPosition.target.latitude,
-                      cameraPosition.target.longitude);
+                  setState(() {
+                    currentLatLng = new LatLng(cameraPosition.target.latitude,
+                        cameraPosition.target.longitude);
+                  });
                 },
                 onCameraIdle: () async {
                   // notify map stopped moving

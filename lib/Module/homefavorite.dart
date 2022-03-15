@@ -1,14 +1,18 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:omahdilit/Api/api_provider.dart';
 import 'package:omahdilit/View/Barberman/reviewBarberman.dart';
-import 'package:omahdilit/View/KonfirmasiPesanan/konfirmasipesanan.dart';
+import 'package:omahdilit/View/Pesanan/konfirmasipesanan.dart';
 import 'package:omahdilit/bloc/mitra/mitrafavorite_bloc.dart';
 import 'package:omahdilit/constant.dart';
+import 'package:omahdilit/model/detailmitra.dart';
 import 'package:omahdilit/model/listmitra.dart';
+import 'package:omahdilit/model/modelhair.dart';
 import 'package:omahdilit/model/review.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -22,21 +26,6 @@ class HomeFavorite extends StatefulWidget {
 
 class _HomeFavoriteState extends State<HomeFavorite> {
   final MitrafavoriteBloc _mitraFavoriteBloc = MitrafavoriteBloc();
-
-  var _listReview = List<Review>.generate(
-    9,
-    (index) => Review(
-      id: index,
-      codeTransaksi: "pesanan " + index.toString(),
-      review: "sangat baik ke " + index.toString(),
-      rating: new Random().nextInt(5),
-      createdAt: "2022-01-0" + index.toString() + "T06:39:50.000000Z",
-      customer: CustomerReview(
-        name: "Rama " + index.toString(),
-        photo: "imgcustomer.png",
-      ),
-    ),
-  );
 
   var locale = 'id';
   var loadedTime, _timeago;
@@ -87,7 +76,7 @@ class _HomeFavoriteState extends State<HomeFavorite> {
     });
   }
 
-  Widget _buildView(BuildContext context, ListMitra listMitra) {
+  Widget _buildView(BuildContext context, ListMitraFavorite listMitra) {
     // _listMitraFavorite = listMitra.mitra!;
     return ListView.builder(
       itemCount: listMitra.mitra!.length,
@@ -99,334 +88,9 @@ class _HomeFavoriteState extends State<HomeFavorite> {
       ),
       itemBuilder: (BuildContext context, int index) {
         return InkWell(
-          // onTap: () {
-          //   showModalBottomSheet(
-          //     shape: RoundedRectangleBorder(
-          //       borderRadius: BorderRadius.only(
-          //           topLeft: Radius.circular(15),
-          //           topRight: Radius.circular(15)),
-          //     ),
-          //     context: context,
-          //     elevation: 1,
-          //     builder: (context) {
-          //       return Container(
-          //         height: tinggi / 2,
-          //         child: Padding(
-          //           padding: EdgeInsets.symmetric(
-          //             horizontal: marginHorizontal,
-          //             vertical: marginVertical,
-          //           ),
-          //           child: Column(
-          //             children: [
-          //               Container(
-          //                 height: tinggi / 100,
-          //                 width: lebar / 9,
-          //                 decoration: BoxDecoration(
-          //                   color: greyPill,
-          //                   borderRadius: BorderRadius.circular(5),
-          //                 ),
-          //               ),
-          //               Container(
-          //                 margin: EdgeInsets.symmetric(
-          //                   vertical: marginVertical,
-          //                 ),
-          //                 child: Row(
-          //                   crossAxisAlignment: CrossAxisAlignment.start,
-          //                   children: [
-          //                     ClipRRect(
-          //                       borderRadius: BorderRadius.circular(100),
-          //                       child: Image.network(
-          //                         "https://omahdilit.my.id/images/" +
-          //                             listMitra.mitra![index].photo.toString(),
-          //                         scale: 3.5,
-          //                       ),
-          //                     ),
-          //                     Container(
-          //                       width: lebar / 1.6,
-          //                       margin: EdgeInsets.only(
-          //                         left: marginHorizontal,
-          //                         top: marginVertical / 2,
-          //                       ),
-          //                       child: Column(
-          //                         crossAxisAlignment: CrossAxisAlignment.start,
-          //                         children: [
-          //                           Row(
-          //                             mainAxisAlignment:
-          //                                 MainAxisAlignment.spaceBetween,
-          //                             children: [
-          //                               Text(
-          //                                 listMitra.mitra![index].name
-          //                                     .toString(),
-          //                                 textAlign: TextAlign.left,
-          //                                 overflow: TextOverflow.fade,
-          //                                 maxLines: 1,
-          //                                 style: TextStyle(
-          //                                   fontWeight: FontWeight.w500,
-          //                                   color: textColor,
-          //                                   fontSize: tinggi / lebar * 7,
-          //                                 ),
-          //                               ),
-          //                               Row(
-          //                                 children: [
-          //                                   Icon(
-          //                                     Icons.star,
-          //                                     color: Colors.amber,
-          //                                     size: lebar / 23,
-          //                                   ),
-          //                                   Text(
-          //                                     listMitra.mitra![index].rating!
-          //                                         .toStringAsFixed(1),
-          //                                     style: TextStyle(
-          //                                         fontWeight: FontWeight.w600,
-          //                                         color: textAccent,
-          //                                         fontSize: tinggi / lebar * 7),
-          //                                   ),
-          //                                   Text(
-          //                                     " dari 3 review",
-          //                                     style: TextStyle(
-          //                                         fontWeight: FontWeight.w400,
-          //                                         color: textAccent,
-          //                                         fontSize: tinggi / lebar * 5),
-          //                                   ),
-          //                                 ],
-          //                               ),
-          //                             ],
-          //                           ),
-          //                           Text(
-          //                             listMitra.mitra![index].workshop
-          //                                 .toString(),
-          //                             textAlign: TextAlign.left,
-          //                             overflow: TextOverflow.fade,
-          //                             maxLines: 1,
-          //                             style: TextStyle(
-          //                                 fontWeight: FontWeight.w300,
-          //                                 color: textAccent,
-          //                                 fontSize: tinggi / lebar * 7),
-          //                           ),
-          //                         ],
-          //                       ),
-          //                     ),
-          //                   ],
-          //                 ),
-          //               ),
-          //               Row(
-          //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //                 children: [
-          //                   Container(
-          //                     child: Text(
-          //                       "Review Pelanggan",
-          //                       style: TextStyle(
-          //                         fontWeight: FontWeight.w500,
-          //                         fontSize: tinggi / lebar * 8,
-          //                       ),
-          //                     ),
-          //                   ),
-          //                   InkWell(
-          //                     child: Text(
-          //                       "Lihat Semua",
-          //                       style: TextStyle(
-          //                         color: blue,
-          //                         fontSize: tinggi / lebar * 7,
-          //                         fontWeight: FontWeight.w300,
-          //                       ),
-          //                     ),
-          //                     onTap: () {
-          //                       Navigator.push(
-          //                         context,
-          //                         CupertinoPageRoute(
-          //                           builder: (_) => ReviewBarberman(),
-          //                         ),
-          //                       );
-          //                     },
-          //                   )
-          //                 ],
-          //               ),
-          //               Expanded(
-          //                 child: Container(
-          //                   margin: EdgeInsets.symmetric(
-          //                     vertical: marginVertical,
-          //                   ),
-          //                   width: lebar,
-          //                   child: ListView.builder(
-          //                     itemCount: _listReview.length,
-          //                     scrollDirection: Axis.horizontal,
-          //                     itemBuilder: (BuildContext contex, int index) {
-          //                       Future.delayed(
-          //                         Duration.zero,
-          //                         () async {
-          //                           countTimeAgo(
-          //                             DateTime.parse(
-          //                               _listReview[index].createdAt.toString(),
-          //                             ),
-          //                           );
-          //                         },
-          //                       );
-          //                       return Card(
-          //                         elevation: 2,
-          //                         margin: EdgeInsets.symmetric(
-          //                             horizontal: marginHorizontal / 2.5,
-          //                             vertical: marginVertical / 2.5),
-          //                         shape: RoundedRectangleBorder(
-          //                           borderRadius: BorderRadius.circular(10),
-          //                         ),
-          //                         child: Container(
-          //                           width: lebar / 1.5,
-          //                           padding: EdgeInsets.symmetric(
-          //                               horizontal: marginHorizontal,
-          //                               vertical: marginVertical / 2),
-          //                           child: Column(
-          //                             crossAxisAlignment:
-          //                                 CrossAxisAlignment.start,
-          //                             children: [
-          //                               Row(
-          //                                 children: [
-          //                                   ClipRRect(
-          //                                     borderRadius:
-          //                                         BorderRadius.circular(100),
-          //                                     child: Image.network(
-          //                                       "https://omahdilit.my.id/images/${_listReview[index].customer?.photo}",
-          //                                       scale: 4.5,
-          //                                       fit: BoxFit.cover,
-          //                                     ),
-          //                                   ),
-          //                                   Column(
-          //                                     crossAxisAlignment:
-          //                                         CrossAxisAlignment.start,
-          //                                     children: [
-          //                                       Container(
-          //                                         width: lebar / 2.7,
-          //                                         margin: EdgeInsets.only(
-          //                                             left: marginHorizontal /
-          //                                                 1.5),
-          //                                         child: Row(
-          //                                           mainAxisAlignment:
-          //                                               MainAxisAlignment
-          //                                                   .spaceBetween,
-          //                                           children: [
-          //                                             Text(
-          //                                               _listReview[index]
-          //                                                   .customer!
-          //                                                   .name
-          //                                                   .toString(),
-          //                                               style: TextStyle(
-          //                                                 fontWeight:
-          //                                                     FontWeight.w500,
-          //                                                 fontSize: tinggi /
-          //                                                     lebar *
-          //                                                     6,
-          //                                               ),
-          //                                             ),
-          //                                             Row(
-          //                                               children: [
-          //                                                 Icon(
-          //                                                   Icons.star,
-          //                                                   color: Colors.amber,
-          //                                                   size: lebar / 25,
-          //                                                 ),
-          //                                                 Text(
-          //                                                   _listReview[index]
-          //                                                       .rating!
-          //                                                       .toStringAsFixed(
-          //                                                           1),
-          //                                                   style: TextStyle(
-          //                                                     fontWeight:
-          //                                                         FontWeight
-          //                                                             .w500,
-          //                                                     color: textAccent,
-          //                                                     fontSize: tinggi /
-          //                                                         lebar *
-          //                                                         6,
-          //                                                   ),
-          //                                                 ),
-          //                                               ],
-          //                                             ),
-          //                                           ],
-          //                                         ),
-          //                                       ),
-          //                                       Padding(
-          //                                         padding: EdgeInsets.only(
-          //                                             left: marginHorizontal /
-          //                                                 1.5),
-          //                                         child: Text(
-          //                                           _timeago,
-          //                                           style: TextStyle(
-          //                                             fontWeight:
-          //                                                 FontWeight.w500,
-          //                                             color: textAccent,
-          //                                             fontSize:
-          //                                                 tinggi / lebar * 6,
-          //                                           ),
-          //                                         ),
-          //                                       ),
-          //                                     ],
-          //                                   )
-          //                                 ],
-          //                               ),
-          //                               Padding(
-          //                                 padding: EdgeInsets.symmetric(
-          //                                   horizontal: marginHorizontal / 3,
-          //                                   vertical: marginVertical / 3,
-          //                                 ),
-          //                                 child: Expanded(
-          //                                   child: Text(
-          //                                     _listReview[index]
-          //                                         .review
-          //                                         .toString(),
-          //                                     overflow: TextOverflow.fade,
-          //                                     maxLines: 3,
-          //                                     style: TextStyle(
-          //                                       fontWeight: FontWeight.w400,
-          //                                       fontSize: tinggi / lebar * 6.5,
-          //                                     ),
-          //                                   ),
-          //                                 ),
-          //                               ),
-          //                             ],
-          //                           ),
-          //                         ),
-          //                       );
-          //                     },
-          //                   ),
-          //                 ),
-          //               ),
-          //               Container(
-          //                 width: lebar,
-          //                 padding: EdgeInsets.symmetric(
-          //                   vertical: marginVertical / 2,
-          //                 ),
-          //                 decoration: BoxDecoration(
-          //                   color: blue,
-          //                   borderRadius: BorderRadius.circular(5),
-          //                 ),
-          //                 child: InkWell(
-          //                   onTap: () {
-          //                     Navigator.push(
-          //                       context,
-          //                       CupertinoPageRoute(
-          //                         builder: (_) => KonfirmasiPesanan(
-          //                           barberman: listMitra.mitra![index],
-          //                         ),
-          //                       ),
-          //                     );
-          //                   },
-          //                   child: Text(
-          //                     "Pilih Barberman",
-          //                     textAlign: TextAlign.center,
-          //                     style: TextStyle(
-          //                       color: Colors.white,
-          //                       fontWeight: FontWeight.w600,
-          //                       fontSize: tinggi / lebar * 8,
-          //                     ),
-          //                   ),
-          //                 ),
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //   );
-          // },
+          onTap: () {
+            _awaitBottomSheet(context, listMitra.mitra![index]);
+          },
           child: Container(
             margin: EdgeInsets.symmetric(
               horizontal: marginHorizontal / 4,
@@ -435,8 +99,8 @@ class _HomeFavoriteState extends State<HomeFavorite> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(100),
-                  child: Image.network(
-                    "https://omahdilit.my.id/images/" +
+                  child: CachedNetworkImage(
+                    imageUrl: "https://omahdilit.my.id/images/" +
                         listMitra.mitra![index].photo.toString(),
                     fit: BoxFit.cover,
                     width: lebar / 7.5,
@@ -444,7 +108,13 @@ class _HomeFavoriteState extends State<HomeFavorite> {
                   ),
                 ),
                 Text(
-                  listMitra.mitra![index].status ==  "1"? "Online" : listMitra.mitra![index].status ==  "0" ? "Offline" : listMitra.mitra![index].status ==  "2" ? "Sibuk" : "-",
+                  listMitra.mitra![index].status == "1"
+                      ? "Online"
+                      : listMitra.mitra![index].status == "0"
+                          ? "Offline"
+                          : listMitra.mitra![index].status == "2"
+                              ? "Sibuk"
+                              : "-",
                 ),
               ],
             ),
@@ -467,28 +137,363 @@ class _HomeFavoriteState extends State<HomeFavorite> {
             horizontal: marginHorizontal,
           ),
           itemBuilder: (BuildContext context, int index) {
-            return InkWell(
-              onTap: () {},
-              child: Container(
-                margin: EdgeInsets.symmetric(
-                  horizontal: marginHorizontal / 4,
+            return Container(
+              margin: EdgeInsets.symmetric(
+                horizontal: marginHorizontal / 4,
+              ),
+            );
+          }),
+    );
+  }
+
+  void _awaitBottomSheet(BuildContext context, Mitra _mitra) async {
+    Mitra mitra = Mitra();
+    var _rating, _totalReview;
+    await showModalBottomSheet(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+      ),
+      context: context,
+      elevation: 1,
+      builder: (context) {
+        return FutureBuilder<DetailMitra>(
+          future: ApiProvider().fetchDetailMitra(_mitra.id.toString()),
+          builder: (context, snapshot) {
+            // print(snapshot.data!.transaksis![0].toString());
+            if (snapshot.hasData) {
+              mitra = snapshot.data!.detail!;
+              _rating = snapshot.data!.rating;
+              _totalReview = snapshot.data!.total;
+              mitra.rating = double.parse(_rating);
+            }
+            return Container(
+              height: tinggi / 2,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: marginHorizontal,
+                  vertical: marginVertical,
                 ),
                 child: Column(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: Image.network(
-                        "",
+                    Container(
+                      height: tinggi / 100,
+                      width: lebar / 9,
+                      decoration: BoxDecoration(
+                        color: greyPill,
+                        borderRadius: BorderRadius.circular(5),
                       ),
                     ),
-                    Text(
-                      "",
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                        vertical: marginVertical,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: CachedNetworkImage(
+                              imageUrl: "https://omahdilit.my.id/images/" +
+                                  _mitra.photo.toString(),
+                              width: lebar / 4.7,
+                              height: lebar / 4.7,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Container(
+                            width: lebar / 1.6,
+                            margin: EdgeInsets.only(
+                              left: marginHorizontal,
+                              top: marginVertical / 2,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "${_mitra.name}",
+                                      textAlign: TextAlign.left,
+                                      overflow: TextOverflow.fade,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: textColor,
+                                        fontSize: tinggi / lebar * 7,
+                                      ),
+                                    ),
+                                    snapshot.hasData
+                                        ? mitra.transaksis!.isNotEmpty
+                                            ? Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.star,
+                                                    color: Colors.amber,
+                                                    size: lebar / 23,
+                                                  ),
+                                                  Text(
+                                                    _rating,
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: textAccent,
+                                                        fontSize:
+                                                            tinggi / lebar * 7),
+                                                  ),
+                                                  Text(
+                                                    " dari $_totalReview review",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color: textAccent,
+                                                        fontSize:
+                                                            tinggi / lebar * 5),
+                                                  ),
+                                                ],
+                                              )
+                                            : Container()
+                                        : Shimmer.fromColors(
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.star,
+                                                  color: Colors.amber,
+                                                  size: lebar / 23,
+                                                ),
+                                                Text(
+                                                  "   ",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: textAccent,
+                                                      fontSize:
+                                                          tinggi / lebar * 7),
+                                                ),
+                                                Text(
+                                                  "      ",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: textAccent,
+                                                      fontSize:
+                                                          tinggi / lebar * 5),
+                                                ),
+                                              ],
+                                            ),
+                                            baseColor: Colors.grey,
+                                            highlightColor:
+                                                Colors.grey.shade300,
+                                          ),
+                                  ],
+                                ),
+                                Text(
+                                  _mitra.workshop.toString(),
+                                  textAlign: TextAlign.left,
+                                  overflow: TextOverflow.fade,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      color: textAccent,
+                                      fontSize: tinggi / lebar * 7),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          child: Text(
+                            "Review",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: tinggi / lebar * 8,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (snapshot.hasData)
+                      Expanded(
+                        child: Container(
+                            margin: EdgeInsets.symmetric(
+                              vertical: marginVertical / 3,
+                            ),
+                            alignment: Alignment.center,
+                            width: lebar,
+                            child: mitra.transaksis!.length != 0
+                                ? ListView.builder(
+                                    itemCount: mitra.transaksis!.length,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder:
+                                        (BuildContext contex, int index) {
+                                      ModelHair _modelHair =
+                                          mitra.transaksis![index].model!;
+                                      return InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (_) => ReviewBarberman(
+                                                idmitra: _mitra.id!.toString(),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          width: lebar / 2.35,
+                                          height: tinggi,
+                                          alignment: Alignment.centerLeft,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  marginHorizontal / 1.5,
+                                              vertical: marginVertical / 1.7),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: CachedNetworkImageProvider(
+                                                "https://omahdilit.my.id/images/" +
+                                                    _modelHair.photo1!,
+                                              ),
+                                            ),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                child: SizedBox(),
+                                              ),
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: marginHorizontal,
+                                                  vertical: marginVertical / 3,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black
+                                                      .withOpacity(.3),
+                                                  borderRadius:
+                                                      BorderRadius.vertical(
+                                                    bottom: Radius.circular(12),
+                                                  ),
+                                                ),
+                                                width: lebar,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      "${_modelHair.namaModel}",
+                                                      textAlign: TextAlign.left,
+                                                      maxLines: 1,
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color: Colors.white,
+                                                          fontSize: tinggi /
+                                                              lebar *
+                                                              8),
+                                                    ),
+                                                    Text(
+                                                      _modelHair.reviews!.length
+                                                              .toString() +
+                                                          " review",
+                                                      textAlign: TextAlign.left,
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w300,
+                                                          color: Colors.white,
+                                                          fontSize: tinggi /
+                                                              lebar *
+                                                              7),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : Text("Tidak ada data")),
+                      ),
+                    if (!snapshot.hasData)
+                      Expanded(
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                            vertical: marginVertical,
+                          ),
+                          width: lebar,
+                          child: Shimmer.fromColors(
+                            child: ListView.builder(
+                              itemCount: 10,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (BuildContext contex, int index) {
+                                return Container(
+                                  width: lebar / 2.35,
+                                  height: tinggi,
+                                  alignment: Alignment.centerLeft,
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: marginHorizontal / 1.5,
+                                      vertical: marginVertical / 1.7),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                );
+                              },
+                            ),
+                            baseColor: Colors.grey,
+                            highlightColor: Colors.grey.shade300,
+                          ),
+                        ),
+                      ),
+                    Container(
+                      width: lebar,
+                      padding: EdgeInsets.symmetric(
+                        vertical: marginVertical / 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: blue,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (_) => KonfirmasiPesanan(
+                                barberman: mitra,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Pilih Barberman",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: tinggi / lebar * 8,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
             );
-          }),
+          },
+        );
+      },
     );
   }
 }

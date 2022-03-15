@@ -1,3 +1,32 @@
+import 'package:omahdilit/model/review.dart';
+
+class ModelHome {
+  List<ModelHair>? model;
+
+  ModelHome({this.model});
+
+  ModelHome.fromJson(Map<String, dynamic> json) {
+    if (json['model'] != null) {
+      model = <ModelHair>[];
+      json['model'].forEach((v) {
+        model!.add(new ModelHair.fromJson(v));
+      });
+    }
+  }
+
+  ModelHome.withError(String errorMessage) {
+    errorMessage = errorMessage;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.model != null) {
+      data['model'] = this.model!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
 class ModelHair {
   int? id;
   String? namaModel;
@@ -7,10 +36,9 @@ class ModelHair {
   String? kategori;
   String? jenisModel;
   String? detail;
-  int? rating;
-  int? totalreview;
   String? createdAt;
   String? updatedAt;
+  List<ReviewModel>? reviews;
 
   ModelHair(
       {this.id,
@@ -21,10 +49,9 @@ class ModelHair {
       this.kategori,
       this.jenisModel,
       this.detail,
-      this.rating,
-      this.totalreview,
       this.createdAt,
-      this.updatedAt});
+      this.updatedAt,
+      this.reviews});
 
   ModelHair.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -35,10 +62,14 @@ class ModelHair {
     kategori = json['kategori'];
     jenisModel = json['jenis_model'];
     detail = json['detail'];
-    rating = json['rating'];
-    totalreview = json['totalreview'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
+    if (json['reviews'] != null) {
+      reviews = <ReviewModel>[];
+      json['reviews'].forEach((v) {
+        reviews!.add(new ReviewModel.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -51,10 +82,11 @@ class ModelHair {
     data['kategori'] = this.kategori;
     data['jenis_model'] = this.jenisModel;
     data['detail'] = this.detail;
-    data['rating'] = this.rating;
-    data['totalreview'] = this.totalreview;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    if (this.reviews != null) {
+      data['reviews'] = this.reviews!.map((v) => v.toJson()).toList();
+    }
     return data;
   }
 }

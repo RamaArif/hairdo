@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:math';
+import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -7,26 +7,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:omahdilit/Api/api_provider.dart';
-import 'package:omahdilit/View/Home/home.dart';
 import 'package:omahdilit/View/Login/login.dart';
 import 'package:omahdilit/View/Login/register.dart';
 
 import 'package:omahdilit/constant.dart';
-import 'package:omahdilit/model/loginresponse.dart';
+import 'package:omahdilit/model/customer.dart';
 import 'package:omahdilit/navbar.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class verification extends StatefulWidget {
-  verification({Key? key, required this.code, required this.phone})
+class Verification extends StatefulWidget {
+  Verification({Key? key, required this.code, required this.phone})
       : super(key: key);
   final String code, phone;
-  int _start = 60;
   @override
-  verificationState createState() => verificationState();
+  VerificationState createState() => VerificationState();
 }
 
-class verificationState extends State<verification> {
+class VerificationState extends State<Verification> {
   Timer? _timer;
   var textTimer = "60 Detik";
   int _detik = 60;
@@ -50,8 +48,8 @@ class verificationState extends State<verification> {
       oneSec,
       (Timer timer) {
         if (_detik == 0) {
+          timer.cancel();
           setState(() {
-            timer.cancel();
             textTimer = "Kirim Ulang";
           });
         } else {
@@ -71,6 +69,13 @@ class verificationState extends State<verification> {
     super.initState();
     startTimer();
     _verifyPhoneNumber();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -215,7 +220,7 @@ class verificationState extends State<verification> {
           timeout: const Duration(seconds: 60),
           verificationCompleted: (PhoneAuthCredential credential) async {
             _otpController.text = credential.smsCode ?? "";
-            _signedIn(credential.smsCode);
+            // _signedIn(credential.smsCode);
           },
           verificationFailed: (FirebaseAuthException e) {
             if (e.code == 'invalid-phone-number') {
@@ -246,28 +251,28 @@ class verificationState extends State<verification> {
         EasyLoading.showError("Kode OTP salah atau sudah expired");
       }
     }).then((value) {
+      EasyLoading.showSuccess("Login Berhasil");
       sharedPreferences.setBool("loggedIn", true);
       sharedPreferences.setString(
           "number", widget.code.toString() + widget.phone);
-      // var _currentUser = FirebaseAuth.instance.currentUser;
-      sharedPreferences.setString("uid", value.user!.uid);
     });
 
     FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
     firebaseMessaging.getToken().then((value) async {
-
       sharedPreferences.setString("pushToken", value.toString());
       var response =
           await ApiProvider().login(widget.code + widget.phone, value);
       if (response.error == false) {
-        var _number = sharedPreferences.getString("number");
-
-        Navigator.pushAndRemoveUntil(
-            context,
-            CupertinoPageRoute(
-              builder: (_) => BottomNav(),
-            ),
-            (route) => false);
+        // var _number = sharedPreferences.getString("number");
+        Customer _customer = response.customer!;
+        await sharedPreferences
+            .setString("user", jsonEncode(_customer.toJson()))
+            .then((value) => Navigator.pushAndRemoveUntil(
+                context,
+                CupertinoPageRoute(
+                  builder: (_) => BottomNav(),
+                ),
+                (route) => false));
       } else {
         Navigator.pushAndRemoveUntil(
             context,
@@ -277,13 +282,5 @@ class verificationState extends State<verification> {
             (route) => false);
       }
     });
-  }
-
-  _showSnackBar(String text) {
-    final snackBar = SnackBar(
-      content: Text('$text'),
-      duration: Duration(seconds: 2),
-    );
-    scaffoldKey.currentState!.showSnackBar(snackBar);
   }
 }

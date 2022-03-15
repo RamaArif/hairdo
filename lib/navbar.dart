@@ -35,32 +35,34 @@ class _BottomNavState extends State<BottomNav> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      minimum: EdgeInsets.only(
-        bottom: marginHorizontal / 2,
-      ),
       child: Scaffold(
           backgroundColor: Colors.white,
           body: _children.elementAt(_currentIndex),
-          bottomNavigationBar: SalomonBottomBar(
-            margin: EdgeInsets.symmetric(horizontal: marginHorizontal),
-            currentIndex: _currentIndex,
-            onTap: (i) => setState(() => _currentIndex = i),
-            items: [
-              SalomonBottomBarItem(
-                  icon: Icon(Icons.home),
-                  title: Text("Home"),
-                  selectedColor: primary),
-              SalomonBottomBarItem(
-                icon: Icon(Icons.history),
-                title: Text("History"),
-                selectedColor: primary,
-              ),
-              SalomonBottomBarItem(
-                icon: Icon(Icons.person_outline),
-                title: Text("Profil"),
-                selectedColor: primary,
-              )
-            ],
+          bottomNavigationBar: Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: marginVertical / 2,
+            ),
+            child: SalomonBottomBar(
+              margin: EdgeInsets.symmetric(horizontal: marginHorizontal),
+              currentIndex: _currentIndex,
+              onTap: (i) => setState(() => _currentIndex = i),
+              items: [
+                SalomonBottomBarItem(
+                    icon: Icon(Icons.home),
+                    title: Text("Home"),
+                    selectedColor: primary),
+                SalomonBottomBarItem(
+                  icon: Icon(Icons.history),
+                  title: Text("History"),
+                  selectedColor: primary,
+                ),
+                SalomonBottomBarItem(
+                  icon: Icon(Icons.person_outline),
+                  title: Text("Profil"),
+                  selectedColor: primary,
+                )
+              ],
+            ),
           )),
     );
   }

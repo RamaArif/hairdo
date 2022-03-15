@@ -12,7 +12,7 @@ class MitrafavoriteInitial extends MitrafavoriteState {}
 class MitrafavoriteLoading extends MitrafavoriteState {}
 
 class MitrafavoriteLoaded extends MitrafavoriteState {
-  final ListMitra listMitra;
+  final ListMitraFavorite listMitra;
   const MitrafavoriteLoaded(this.listMitra);
 
   @override
