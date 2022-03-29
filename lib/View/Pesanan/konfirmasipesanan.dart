@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_line/dotted_line.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +11,9 @@ import 'package:omahdilit/Api/api_provider.dart';
 import 'package:omahdilit/View/Barberman/allBarberman.dart';
 import 'package:omahdilit/View/FormAlamat/formAlamat.dart';
 import 'package:omahdilit/View/ModelHair/allmodel.dart';
+import 'package:omahdilit/View/Pesanan/activity.dart';
 import 'package:omahdilit/View/Pesanan/detailpesanan.dart';
+import 'package:omahdilit/bloc/activity/activity_bloc.dart';
 import 'package:omahdilit/bloc/transaksi/transaksi_bloc.dart';
 import 'package:omahdilit/constant.dart';
 import 'package:omahdilit/model/listalamat.dart';
@@ -31,8 +34,6 @@ class KonfirmasiPesanan extends StatefulWidget {
 class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
   bool _setalamat = false, _setbarberman = false, _setmodelhair = false;
   Transaksi _transaksi = Transaksi();
-
-  var numberFormat = new NumberFormat.currency(locale: 'id', symbol: "Rp");
 
   final ApiProvider _apiProvider = ApiProvider();
 
@@ -67,6 +68,8 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+
+    
   }
 
   @override
@@ -79,14 +82,16 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
           if (state is OnTransaction) {
             Navigator.pushAndRemoveUntil(
                 context,
-                CupertinoPageRoute(builder: (_) => DetailPesanan()),
+                CupertinoPageRoute(
+                  builder: (_) => Activity(),
+                ),
                 (route) => false);
           }
         },
         child: BlocBuilder<TransaksiBloc, TransaksiState>(
           builder: (context, state) {
             if (state is CreatetransaksiLoaded) {
-              _transaksi = state.transaksi;
+            _transaksi = state.transaksi;
               _isCompleted = state.isFilled;
               if (_isCheckPrice) {
                 if (_transaksi.mitra != null && _transaksi.alamat != null) {
@@ -125,52 +130,54 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
         child: Padding(
           padding: EdgeInsets.only(left: 20.0, right: 20.0),
           child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Total Harga",
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                    Text(
-                      _transaksi.totalharga != null
-                          ? numberFormat.format(_transaksi.totalharga)
-                          : numberFormat.format(0),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Total Harga",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  Text(
+                    _transaksi.totalharga != null
+                        ? numberFormat.format(_transaksi.totalharga)
+                        : numberFormat.format(0),
+                    style: TextStyle(
+                        color: primary,
+                        fontSize: tinggi / lebar * 9,
+                        fontWeight: FontWeight.w600),
+                  )
+                ],
+              ),
+              InkWell(
+                onTap: () {
+                  // print(jsonEncode(_transaksi));
+                  if (_isCompleted) {
+                    _transaksiBloc.add(CreateTransaksiEvent(_transaksi));
+                  }
+                },
+                child: Container(
+                  height: tinggi / 18,
+                  width: lebar / 2.5,
+                  decoration: BoxDecoration(
+                      color: _isCompleted ? blue : Colors.grey,
+                      borderRadius: BorderRadius.all(Radius.circular(12))),
+                  child: Center(
+                    child: Text(
+                      "Buat Pesanan",
                       style: TextStyle(
-                          color: primary,
-                          fontSize: tinggi / lebar * 9,
-                          fontWeight: FontWeight.w600),
-                    )
-                  ],
+                          fontSize: tinggi / lebar * 8,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
                 ),
-                InkWell(
-                    onTap: () {
-                      // print(jsonEncode(_transaksi));
-                      if (_isCompleted) {
-                        _transaksiBloc.add(CreateTransaksiEvent(_transaksi));
-                      }
-                    },
-                    child: Container(
-                      height: tinggi / 18,
-                      width: lebar / 2.5,
-                      decoration: BoxDecoration(
-                          color: _isCompleted ? blue : Colors.grey,
-                          borderRadius: BorderRadius.all(Radius.circular(12))),
-                      child: Center(
-                        child: Text(
-                          "Buat Pesanan",
-                          style: TextStyle(
-                              fontSize: tinggi / lebar * 8,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ))
-              ]),
+              ),
+            ],
+          ),
         ),
       ),
       appBar: AppBar(

@@ -18,6 +18,7 @@ class TransaksiBloc extends Bloc<TransaksiEvent, TransaksiState> {
     final ApiProvider _apiProvider = ApiProvider();
 
     Transaksi _transaksi = Transaksi();
+    
     on<CreateTransaksiEvent>(
       (event, emit) async {
         try {
@@ -47,6 +48,7 @@ class TransaksiBloc extends Bloc<TransaksiEvent, TransaksiState> {
         }
       },
     );
+    
     on<MitraAddedEvent>(
       (event, emit) async {
         try {

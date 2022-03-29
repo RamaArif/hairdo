@@ -75,6 +75,7 @@ class _SplashscreenState extends State<Splashscreen> {
 
     marginHorizontal = lebar / 20;
     marginVertical = tinggi / 50;
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(

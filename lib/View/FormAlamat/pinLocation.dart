@@ -116,7 +116,6 @@ class _PinLocationState extends State<PinLocation> {
                     currentLatLng.latitude,
                     currentLatLng.longitude,
                   );
-
                   // update the ui with the address
                   _textController.text = placemarks.first.street.toString();
                 },

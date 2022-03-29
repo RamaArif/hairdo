@@ -81,7 +81,7 @@ class _HomeFavoriteState extends State<HomeFavorite> {
     return ListView.builder(
       itemCount: listMitra.mitra!.length,
       scrollDirection: Axis.horizontal,
-      itemExtent: tinggi / 13,
+      itemExtent: tinggi / 12,
       padding: EdgeInsets.symmetric(
         vertical: marginVertical,
         horizontal: marginHorizontal,
@@ -108,13 +108,7 @@ class _HomeFavoriteState extends State<HomeFavorite> {
                   ),
                 ),
                 Text(
-                  listMitra.mitra![index].status == "1"
-                      ? "Online"
-                      : listMitra.mitra![index].status == "0"
-                          ? "Offline"
-                          : listMitra.mitra![index].status == "2"
-                              ? "Sibuk"
-                              : "-",
+                  listMitra.mitra![index].name!.split(" ").elementAt(0),
                 ),
               ],
             ),

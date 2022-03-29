@@ -13,6 +13,8 @@ class GetActivity extends ActivityEvent {
   List<Object> get props => [];
 }
 
+class RefreshActivity extends ActivityEvent {}
+
 class DetailActivity extends ActivityEvent {
   final int index;
   const DetailActivity(this.index);
@@ -20,16 +22,4 @@ class DetailActivity extends ActivityEvent {
   List<Object> get props => [index];
 }
 
-class DetailTransaksi extends ActivityEvent {
-  final Transaksi transaksi;
-  const DetailTransaksi(this.transaksi);
-  @override
-  List<Object> get props => [transaksi];
-}
-
-class GetDetail extends ActivityEvent {
-  final int index;
-  const GetDetail(this.index);
-  @override
-  List<Object> get props => [index];
-}
+class RefreshDetailActivity extends ActivityEvent {}

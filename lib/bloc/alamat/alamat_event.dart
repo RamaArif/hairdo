@@ -8,10 +8,6 @@ abstract class AlamatEvent extends Equatable {
 }
 
 class GetAlamatEvent extends AlamatEvent {
-  final String uid;
-  GetAlamatEvent(this.uid);
-  @override
-  List<Object> get props => [uid];
 }
 
 class CreateAlamatEvent extends AlamatEvent {

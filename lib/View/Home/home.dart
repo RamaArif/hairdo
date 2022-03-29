@@ -69,7 +69,6 @@ class _HomeState extends State<Home> {
                           margin: EdgeInsets.only(
                             top: marginVertical,
                             left: marginHorizontal,
-                            bottom: marginVertical,
                           ),
                           child: TextField(
                             enabled: false,
@@ -239,7 +238,7 @@ class _HomeState extends State<Home> {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Pilih mitra cukur rambut favorit anda",
+                      "Pilih mitra cukur rambut anda",
                       style: TextStyle(
                         fontWeight: FontWeight.w300,
                         fontSize: tinggi / lebar * 7,

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:omahdilit/model/baseresponse.dart';
@@ -214,9 +212,22 @@ class ApiProvider extends ChangeNotifier {
 
   Future<ListTransaksi> fetchActivity(id) async {
     try {
-      print(id.toString());
+      // print(id.toString());
       Response response = await _dio.get(
         _baseUrl + "activity/" + id.toString(),
+      );
+      return ListTransaksi.fromJson(response.data);
+    } catch (error) {
+      print(error);
+      return ListTransaksi.withError("Data not found / Connection issue");
+    }
+  }
+
+  Future<ListTransaksi> FetchHistory(id) async {
+    try {
+      // print(id.toString());
+      Response response = await _dio.get(
+        _baseUrl + "history/" + id.toString(),
       );
       return ListTransaksi.fromJson(response.data);
     } catch (error) {

@@ -51,13 +51,14 @@ class _LoginState extends State<Login> {
                 decoration: BoxDecoration(
                     color: primary, borderRadius: BorderRadius.circular(10)),
                 child: Center(
-                    child: Text(
-                  "Lanjutkan",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: tinggi / lebar * 7.5),
-                )),
+                  child: Text(
+                    "Lanjutkan",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: tinggi / lebar * 7.5),
+                  ),
+                ),
               ),
             ),
           ),

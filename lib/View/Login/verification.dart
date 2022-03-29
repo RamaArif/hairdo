@@ -156,6 +156,7 @@ class VerificationState extends State<Verification> {
                 alignment: Alignment.center,
                 width: lebar,
                 child: PinPut(
+                  autofocus: true,
                   controller: _otpController,
                   onChanged: (val) {
                     if (val.length == 6) {
@@ -246,6 +247,7 @@ class VerificationState extends State<Verification> {
         verificationId: _verificationId ?? "", smsCode: smsCode);
 
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
     await _auth.signInWithCredential(credential).catchError((error) {
       if (error.code == 'invalid-verification-code') {
         EasyLoading.showError("Kode OTP salah atau sudah expired");
