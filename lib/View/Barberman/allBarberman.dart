@@ -256,7 +256,7 @@ class _AllBarbermanState extends State<AllBarberman>
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(100),
                       child: Image.network(
-                        "https://omahdilit.my.id/images/" +
+                        "https://omahdilit.site/images/" +
                             _mitra.photo.toString(),
                         width: lebar / 4.7,
                         height: lebar / 4.7,
@@ -388,7 +388,7 @@ class _AllBarbermanState extends State<AllBarberman>
                           ClipRRect(
                             borderRadius: BorderRadius.circular(100),
                             child: CachedNetworkImage(
-                              imageUrl: "https://omahdilit.my.id/images/" +
+                              imageUrl: "https://omahdilit.site/images/" +
                                   _mitra.photo.toString(),
                               width: lebar / 4.7,
                               height: lebar / 4.7,
@@ -554,7 +554,7 @@ class _AllBarbermanState extends State<AllBarberman>
                                             image: DecorationImage(
                                               fit: BoxFit.cover,
                                               image: CachedNetworkImageProvider(
-                                                "https://omahdilit.my.id/images/" +
+                                                "https://omahdilit.site/images/" +
                                                     _modelHair.photo1!,
                                               ),
                                             ),

@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import "package:flutter/cupertino.dart";
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:omahdilit/Api/api_provider.dart';
 import 'package:omahdilit/View/FormAlamat/pinLocation.dart';
+import 'package:omahdilit/bloc/provcity/city_bloc.dart';
+import 'package:omahdilit/bloc/provcity/province_bloc.dart';
 import 'package:omahdilit/constant.dart';
 import 'package:omahdilit/model/listalamat.dart';
 import 'package:omahdilit/model/listkota.dart';
@@ -21,9 +26,11 @@ class FormAlamat extends StatefulWidget {
 
 class _FormAlamatState extends State<FormAlamat> {
   bool isProv = false;
-  Provinsi _provinsi = Provinsi();
+  Provinsi? _provinsi;
+
+  int indexProvince = 0, indexCity = 0;
   bool isCity = false;
-  Kota _kota = Kota();
+  Kota? _kota;
   bool isPin = false;
   bool utama = true;
   LatLng? latLng;
@@ -82,8 +89,8 @@ class _FormAlamatState extends State<FormAlamat> {
                     nama: _nameController.text,
                     noTelp: _numberController.text,
                     alamat: _alamatController.text,
-                    provinsi: _provinsi.province,
-                    kota: _kota.cityName,
+                    provinsi: _provinsi!.province,
+                    kota: _kota!.cityName,
                     kecamatan: _kecamatanController.text,
                     lat: latLng!.latitude,
                     lng: latLng!.longitude,
@@ -107,13 +114,14 @@ class _FormAlamatState extends State<FormAlamat> {
               }
             },
             child: Center(
-                child: Text(
-              "Simpan",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: tinggi / lebar * 7.5),
-            )),
+              child: Text(
+                "Simpan",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: tinggi / lebar * 7.5),
+              ),
+            ),
           ),
         ),
         body: SingleChildScrollView(
@@ -293,7 +301,7 @@ class _FormAlamatState extends State<FormAlamat> {
                       margin: EdgeInsets.only(top: marginVertical / 2),
                       color: Colors.white,
                       child: Text(
-                        isProv ? _provinsi.province! : "Pilih provinsi",
+                        isProv ? _provinsi!.province! : "Pilih provinsi",
                         style: TextStyle(
                           color: isProv ? textColor : textAccent,
                         ),
@@ -304,7 +312,7 @@ class _FormAlamatState extends State<FormAlamat> {
                     onTap: () {
                       if (isProv) {
                         _awaitPickKota(
-                            context, _provinsi.provinceId.toString());
+                            context, _provinsi!.provinceId.toString());
                       } else {
                         EasyLoading.showError("Kamu belum pilih provinsi");
                       }
@@ -319,7 +327,7 @@ class _FormAlamatState extends State<FormAlamat> {
                       margin: EdgeInsets.only(top: marginVertical / 2),
                       color: Colors.white,
                       child: Text(
-                        isCity ? _kota.cityName! : "Pilih kota",
+                        isCity ? _kota!.cityName! : "Pilih kota",
                         style: TextStyle(
                           color: isCity ? textColor : textAccent,
                         ),
@@ -371,22 +379,23 @@ class _FormAlamatState extends State<FormAlamat> {
                       color: Colors.white,
                       alignment: Alignment.centerLeft,
                       child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              !isPin ? "Set Peta Lokasi" : "Sudah Set Lokasi",
-                              style: TextStyle(
-                                color: !isPin ? textAccent : textColor,
-                                fontSize: tinggi / lebar * 7,
-                              ),
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            !isPin ? "Set Peta Lokasi" : "Sudah Set Lokasi",
+                            style: TextStyle(
+                              color: !isPin ? textAccent : textColor,
+                              fontSize: tinggi / lebar * 7,
                             ),
-                            isPin
-                                ? Icon(
-                                    Icons.check_sharp,
-                                    color: blue,
-                                  )
-                                : Container(),
-                          ]),
+                          ),
+                          isPin
+                              ? Icon(
+                                  Icons.check_sharp,
+                                  color: blue,
+                                )
+                              : Container(),
+                        ],
+                      ),
                     ),
                   ),
                   Container(
@@ -430,9 +439,9 @@ class _FormAlamatState extends State<FormAlamat> {
     );
   }
 
-  void _awaitPickProvinsi(BuildContext context) async {
-    final result = await showModalBottomSheet(
-      shape: RoundedRectangleBorder(
+  Future<void> _awaitPickProvinsi(BuildContext context) async {
+    await showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(15), topRight: Radius.circular(15)),
       ),
@@ -452,18 +461,43 @@ class _FormAlamatState extends State<FormAlamat> {
                   height: tinggi / 100,
                   width: lebar / 9,
                   decoration: BoxDecoration(
-                    color: greyPill,
+                    color: greyLight,
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
                 Expanded(
                   child: Container(
                     width: lebar,
-                    child: FutureBuilder<ListProvinsi>(
-                      future: _apiProvider.fetchProvinsi(),
-                      builder: (context, snapshot) {
-                        // print("Provinsi = " + snapshot.toString());
-                        if (snapshot.data == null) {
+                    child: BlocBuilder<ProvinceBloc, ProvinceState>(
+                      builder: (context, state) {
+                        if (state is ProvLoaded) {
+                          return CupertinoPicker(
+                            useMagnifier: true,
+                            magnification: 1.0,
+                            itemExtent: 50,
+                            scrollController: FixedExtentScrollController(
+                                initialItem: indexProvince),
+                            onSelectedItemChanged: (value) {
+                              setState(() {
+                                isProv = true;
+                                _kota = null;
+                                indexCity = 0;
+                                indexProvince = value;
+                                _provinsi = state
+                                    .listProvinsi.rajaongkir!.results![value];
+                              });
+                            },
+                            children: List<Widget>.generate(
+                                state.listProvinsi.rajaongkir!.results!.length,
+                                (int index) {
+                              return Center(
+                                child: Text(state.listProvinsi.rajaongkir!
+                                        .results![index].province ??
+                                    ""),
+                              );
+                            }),
+                          );
+                        } else {
                           return Shimmer.fromColors(
                             child: Container(
                               margin: EdgeInsets.symmetric(
@@ -491,32 +525,6 @@ class _FormAlamatState extends State<FormAlamat> {
                             baseColor: Colors.grey.shade300,
                             highlightColor: Colors.grey.shade400,
                           );
-                        } else {
-                          return CupertinoPicker(
-                            useMagnifier: true,
-                            magnification: 1.0,
-                            itemExtent: 40,
-                            scrollController: FixedExtentScrollController(
-                              initialItem: 0,
-                            ),
-                            onSelectedItemChanged: (value) {
-                              setState(() {
-                                isProv = true;
-
-                                _provinsi =
-                                    snapshot.data!.rajaongkir!.results![value];
-                              });
-                            },
-                            children: List<Widget>.generate(
-                                snapshot.data!.rajaongkir!.results!.length,
-                                (int index) {
-                              return Center(
-                                child: Text(snapshot.data!.rajaongkir!
-                                        .results![index].province ??
-                                    ""),
-                              );
-                            }),
-                          );
                         }
                       },
                     ),
@@ -527,12 +535,16 @@ class _FormAlamatState extends State<FormAlamat> {
           ),
         );
       },
-    );
+    ).whenComplete(() {
+      if (_provinsi != null) {
+        context.read<CityBloc>().add(GetCity(_provinsi!.provinceId!));
+      }
+    });
   }
 
   void _awaitPickKota(BuildContext context, String provinceId) async {
     final result = await showModalBottomSheet(
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(15),
           topRight: Radius.circular(15),
@@ -554,18 +566,44 @@ class _FormAlamatState extends State<FormAlamat> {
                   height: tinggi / 100,
                   width: lebar / 9,
                   decoration: BoxDecoration(
-                    color: greyPill,
+                    color: greyLight,
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
                 Expanded(
                   child: Container(
                     width: lebar,
-                    child: FutureBuilder<ListKota>(
-                      future: _apiProvider.fetchKota(provinceId),
-                      builder: (context, snapshot) {
-                        // print("Provinsi = " + snapshot.toString());
-                        if (!snapshot.hasData) {
+                    child: BlocBuilder<CityBloc, CityState>(
+                      builder: (context, state) {
+                        if (state is CityLoaded) {
+                          print(jsonEncode(state.listKota));
+                          return CupertinoPicker(
+                            useMagnifier: true,
+                            magnification: 1.0,
+                            itemExtent: 50,
+                            scrollController: FixedExtentScrollController(
+                              initialItem: indexCity,
+                            ),
+                            onSelectedItemChanged: (value) {
+                              setState(() {
+                                isCity = true;
+                                indexCity = value;
+
+                                _kota =
+                                    state.listKota.rajaongkir!.results![value];
+                              });
+                            },
+                            children: List<Widget>.generate(
+                                state.listKota.rajaongkir!.results!.length,
+                                (int index) {
+                              return Center(
+                                child: Text(state.listKota.rajaongkir!
+                                        .results![index].cityName ??
+                                    ""),
+                              );
+                            }),
+                          );
+                        } else {
                           return Shimmer.fromColors(
                             child: Container(
                               margin: EdgeInsets.symmetric(
@@ -593,32 +631,6 @@ class _FormAlamatState extends State<FormAlamat> {
                             baseColor: Colors.grey.shade300,
                             highlightColor: Colors.grey.shade400,
                           );
-                        } else {
-                          return CupertinoPicker(
-                            useMagnifier: true,
-                            magnification: 1.0,
-                            itemExtent: 40,
-                            scrollController: FixedExtentScrollController(
-                              initialItem: 0,
-                            ),
-                            onSelectedItemChanged: (value) {
-                              setState(() {
-                                isCity = true;
-                                _kota =
-                                    snapshot.data!.rajaongkir!.results![value];
-                              });
-                            },
-                            children: List<Widget>.generate(
-                              snapshot.data!.rajaongkir!.results!.length,
-                              (int index) {
-                                return Center(
-                                  child: Text(snapshot.data!.rajaongkir!
-                                          .results![index].cityName ??
-                                      ""),
-                                );
-                              },
-                            ),
-                          );
                         }
                       },
                     ),
@@ -631,6 +643,208 @@ class _FormAlamatState extends State<FormAlamat> {
       },
     );
   }
+
+  // void _awaitPickProvinsi(BuildContext context) async {
+  //   final result = await showModalBottomSheet(
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.only(
+  //           topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+  //     ),
+  //     context: context,
+  //     elevation: 1,
+  //     builder: (context) {
+  //       return Container(
+  //         height: tinggi / 2,
+  //         child: Padding(
+  //           padding: EdgeInsets.symmetric(
+  //             horizontal: marginHorizontal,
+  //             vertical: marginVertical,
+  //           ),
+  //           child: Column(
+  //             children: [
+  //               Container(
+  //                 height: tinggi / 100,
+  //                 width: lebar / 9,
+  //                 decoration: BoxDecoration(
+  //                   color: greyPill,
+  //                   borderRadius: BorderRadius.circular(5),
+  //                 ),
+  //               ),
+  //               Expanded(
+  //                 child: Container(
+  //                   width: lebar,
+  //                   child: FutureBuilder<ListProvinsi>(
+  //                     future: _apiProvider.fetchProvinsi(),
+  //                     builder: (context, snapshot) {
+  //                       // print("Provinsi = " + snapshot.toString());
+  //                       if (snapshot.data == null) {
+  //                         return Shimmer.fromColors(
+  //                           child: Container(
+  //                             margin: EdgeInsets.symmetric(
+  //                               vertical: marginVertical,
+  //                               horizontal: marginHorizontal,
+  //                             ),
+  //                             child: Card(
+  //                               shape: RoundedRectangleBorder(
+  //                                 borderRadius: BorderRadius.circular(12),
+  //                               ),
+  //                               margin: EdgeInsets.symmetric(
+  //                                   horizontal: marginHorizontal / 2),
+  //                               child: Container(
+  //                                 width: lebar,
+  //                                 padding: EdgeInsets.symmetric(
+  //                                   horizontal: marginHorizontal / 2,
+  //                                   vertical: marginVertical / 2,
+  //                                 ),
+  //                                 decoration: BoxDecoration(
+  //                                   borderRadius: BorderRadius.circular(12),
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                           ),
+  //                           baseColor: Colors.grey.shade300,
+  //                           highlightColor: Colors.grey.shade400,
+  //                         );
+  //                       } else {
+  //                         return CupertinoPicker(
+  //                           useMagnifier: true,
+  //                           magnification: 1.0,
+  //                           itemExtent: 40,
+  //                           scrollController: FixedExtentScrollController(
+  //                             initialItem: 0,
+  //                           ),
+  //                           onSelectedItemChanged: (value) {
+  //                             setState(() {
+  //                               isProv = true;
+
+  //                               _provinsi =
+  //                                   snapshot.data!.rajaongkir!.results![value];
+  //                             });
+  //                           },
+  //                           children: List<Widget>.generate(
+  //                               snapshot.data!.rajaongkir!.results!.length,
+  //                               (int index) {
+  //                             return Center(
+  //                               child: Text(snapshot.data!.rajaongkir!
+  //                                       .results![index].province ??
+  //                                   ""),
+  //                             );
+  //                           }),
+  //                         );
+  //                       }
+  //                     },
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+  // void _awaitPickKota(BuildContext context, String provinceId) async {
+  //   final result = await showModalBottomSheet(
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.only(
+  //         topLeft: Radius.circular(15),
+  //         topRight: Radius.circular(15),
+  //       ),
+  //     ),
+  //     context: context,
+  //     elevation: 1,
+  //     builder: (context) {
+  //       return Container(
+  //         height: tinggi / 2,
+  //         child: Padding(
+  //           padding: EdgeInsets.symmetric(
+  //             horizontal: marginHorizontal,
+  //             vertical: marginVertical,
+  //           ),
+  //           child: Column(
+  //             children: [
+  //               Container(
+  //                 height: tinggi / 100,
+  //                 width: lebar / 9,
+  //                 decoration: BoxDecoration(
+  //                   color: greyPill,
+  //                   borderRadius: BorderRadius.circular(5),
+  //                 ),
+  //               ),
+  //               Expanded(
+  //                 child: Container(
+  //                   width: lebar,
+  //                   child: FutureBuilder<ListKota>(
+  //                     future: _apiProvider.fetchKota(provinceId),
+  //                     builder: (context, snapshot) {
+  //                       // print("Provinsi = " + snapshot.toString());
+  //                       if (!snapshot.hasData) {
+  //                         return Shimmer.fromColors(
+  //                           child: Container(
+  //                             margin: EdgeInsets.symmetric(
+  //                               vertical: marginVertical,
+  //                               horizontal: marginHorizontal,
+  //                             ),
+  //                             child: Card(
+  //                               shape: RoundedRectangleBorder(
+  //                                 borderRadius: BorderRadius.circular(12),
+  //                               ),
+  //                               margin: EdgeInsets.symmetric(
+  //                                   horizontal: marginHorizontal / 2),
+  //                               child: Container(
+  //                                 width: lebar,
+  //                                 padding: EdgeInsets.symmetric(
+  //                                   horizontal: marginHorizontal / 2,
+  //                                   vertical: marginVertical / 2,
+  //                                 ),
+  //                                 decoration: BoxDecoration(
+  //                                   borderRadius: BorderRadius.circular(12),
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                           ),
+  //                           baseColor: Colors.grey.shade300,
+  //                           highlightColor: Colors.grey.shade400,
+  //                         );
+  //                       } else {
+  //                         return CupertinoPicker(
+  //                           useMagnifier: true,
+  //                           magnification: 1.0,
+  //                           itemExtent: 40,
+  //                           scrollController: FixedExtentScrollController(
+  //                             initialItem: 0,
+  //                           ),
+  //                           onSelectedItemChanged: (value) {
+  //                             setState(() {
+  //                               isCity = true;
+  //                               _kota =
+  //                                   snapshot.data!.rajaongkir!.results![value];
+  //                             });
+  //                           },
+  //                           children: List<Widget>.generate(
+  //                             snapshot.data!.rajaongkir!.results!.length,
+  //                             (int index) {
+  //                               return Center(
+  //                                 child: Text(snapshot.data!.rajaongkir!
+  //                                         .results![index].cityName ??
+  //                                     ""),
+  //                               );
+  //                             },
+  //                           ),
+  //                         );
+  //                       }
+  //                     },
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   void _awaitSetPinLocation(BuildContext context) async {
     final result = await Navigator.push(

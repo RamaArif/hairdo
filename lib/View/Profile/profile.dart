@@ -5,9 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:omahdilit/View/Login/login.dart';
+import 'package:omahdilit/View/Profile/policy.dart';
 import 'package:omahdilit/bloc/alamat/alamat_bloc.dart';
 import 'package:omahdilit/bloc/profile/profile_bloc.dart';
 import 'package:omahdilit/constant.dart';
+import 'package:omahdilit/loading.dart';
 import 'package:omahdilit/model/customer.dart';
 import 'package:omahdilit/model/listalamat.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,16 +23,11 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  ProfileBloc _profileBloc = ProfileBloc();
-  AlamatBloc _alamatBloc = AlamatBloc();
   Customer _customer = Customer();
 
   @override
   void initState() {
     // TODO: implement initState
-    if (_customer.id == null) {
-      _profileBloc.add(GetProfile());
-    }
     super.initState();
   }
 
@@ -38,28 +35,18 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => _profileBloc,
-          ),
-          BlocProvider(
-            create: (context) => _alamatBloc,
-          ),
-        ],
-        child: BlocBuilder<ProfileBloc, ProfileState>(
-          builder: (context, state) {
-            if (state is ProfileLoaded) {
-              _customer = state.customer;
-              _alamatBloc.add(GetAlamatEvent());
-              return _buildView(context);
-            } else if (state is ProfileError) {
-              return _buildError();
-            } else {
-              return _buildLoading();
-            }
-          },
-        ),
+      body: BlocBuilder<ProfileBloc, ProfileState>(
+        builder: (context, state) {
+          if (state is ProfileSuccess) {
+            _customer = state.customer;
+            context.read<AlamatBloc>().add(GetAlamatEvent());
+            return _buildView(context);
+          } else if (state is ProfileError) {
+            return _buildError();
+          } else {
+            return _buildLoading();
+          }
+        },
       ),
     );
   }
@@ -86,7 +73,7 @@ class _ProfileState extends State<Profile> {
                   borderRadius: BorderRadius.circular(100),
                   child: CachedNetworkImage(
                     imageUrl:
-                        "https://omahdilit.my.id/images/" + _customer.photo!,
+                        "https://omahdilit.site/images/" + _customer.photo!,
                     width: lebar / 4.75,
                     height: lebar / 4.75,
                     fit: BoxFit.cover,
@@ -184,7 +171,13 @@ class _ProfileState extends State<Profile> {
             ),
           ),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              print("Kebijakan Privasi");
+              Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (_) => const Policy(isPolicy: true)));
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: marginHorizontal / 2,
@@ -226,7 +219,12 @@ class _ProfileState extends State<Profile> {
             ),
           ),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (_) => const Policy(isPolicy: false)));
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: marginHorizontal / 2,
@@ -237,7 +235,7 @@ class _ProfileState extends State<Profile> {
                   Row(
                     children: [
                       Icon(
-                        Icons.help_outline,
+                        Icons.privacy_tip_outlined,
                         color: Colors.grey,
                         size: marginHorizontal * 1.3,
                       ),
@@ -245,7 +243,7 @@ class _ProfileState extends State<Profile> {
                         width: marginHorizontal / 2,
                       ),
                       Text(
-                        "Bantuan",
+                        "Syarat dan Ketentuan",
                         style: TextStyle(
                           fontSize: tinggi / lebar * 8,
                         ),
@@ -369,7 +367,7 @@ class _ProfileState extends State<Profile> {
   }
 
   Widget _buildLoading() {
-    return Container();
+    return LoadingBuilder();
   }
 
   Widget _buildError() {

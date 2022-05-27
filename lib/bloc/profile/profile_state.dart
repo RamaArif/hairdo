@@ -11,9 +11,20 @@ class ProfileInitial extends ProfileState {}
 
 class ProfileLoading extends ProfileState {}
 
-class ProfileLoaded extends ProfileState {
+class Unregistered extends ProfileState {
+  final String code, phone;
+  const Unregistered(this.code,this.phone);
+
+  @override
+  List<Object> get props => [code,phone];
+}
+
+class ProfileSuccess extends ProfileState {
   final Customer customer;
-  const ProfileLoaded(this.customer);
+  const ProfileSuccess(this.customer);
+
+  @override
+  List<Object> get props => [customer];
 }
 
 class ProfileError extends ProfileState {

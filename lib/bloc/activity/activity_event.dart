@@ -13,7 +13,11 @@ class GetActivity extends ActivityEvent {
   List<Object> get props => [];
 }
 
-class RefreshActivity extends ActivityEvent {}
+class RefreshActivity extends ActivityEvent {
+  const RefreshActivity();
+  @override
+  List<Object> get props => [];
+}
 
 class DetailActivity extends ActivityEvent {
   final int index;

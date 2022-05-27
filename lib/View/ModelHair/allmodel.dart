@@ -250,7 +250,7 @@ class _AllModelHairState extends State<AllModelHair>
               image: DecorationImage(
                 fit: BoxFit.cover,
                 image: CachedNetworkImageProvider(
-                  "https://omahdilit.my.id/images/" + _modelhair.photo1!,
+                  "https://omahdilit.site/images/" + _modelhair.photo1!,
                 ),
               ),
             ),

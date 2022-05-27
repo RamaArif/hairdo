@@ -138,7 +138,7 @@ class _DetailModelState extends State<DetailModel> {
                           }),
                       items: imgList
                           .map((item) => Image.network(
-                                "https://omahdilit.my.id/images/" + item,
+                                "https://omahdilit.site/images/" + item,
                                 fit: BoxFit.cover,
                                 width: lebar,
                               ))

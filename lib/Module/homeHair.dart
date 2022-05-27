@@ -65,7 +65,7 @@ class _HomeHairState extends State<HomeHair> {
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image: CachedNetworkImageProvider(
-                          "https://omahdilit.my.id/images/" +
+                          "https://omahdilit.site/images/" +
                               _modelHair.photo1!),
                     ),
                   ),

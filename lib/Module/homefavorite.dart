@@ -100,7 +100,7 @@ class _HomeFavoriteState extends State<HomeFavorite> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(100),
                   child: CachedNetworkImage(
-                    imageUrl: "https://omahdilit.my.id/images/" +
+                    imageUrl: "https://omahdilit.site/images/" +
                         listMitra.mitra![index].photo.toString(),
                     fit: BoxFit.cover,
                     width: lebar / 7.5,
@@ -188,7 +188,7 @@ class _HomeFavoriteState extends State<HomeFavorite> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(100),
                             child: CachedNetworkImage(
-                              imageUrl: "https://omahdilit.my.id/images/" +
+                              imageUrl: "https://omahdilit.site/images/" +
                                   _mitra.photo.toString(),
                               width: lebar / 4.7,
                               height: lebar / 4.7,
@@ -354,7 +354,7 @@ class _HomeFavoriteState extends State<HomeFavorite> {
                                             image: DecorationImage(
                                               fit: BoxFit.cover,
                                               image: CachedNetworkImageProvider(
-                                                "https://omahdilit.my.id/images/" +
+                                                "https://omahdilit.site/images/" +
                                                     _modelHair.photo1!,
                                               ),
                                             ),

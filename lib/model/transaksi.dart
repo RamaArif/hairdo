@@ -25,7 +25,7 @@ class ListTransaksi {
     }
     return data;
   }
-  
+
   ListTransaksi.withError(String errorMessage) {
     errorMessage = errorMessage;
   }

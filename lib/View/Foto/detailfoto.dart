@@ -47,8 +47,7 @@ class _DetailFotoState extends State<DetailFoto> {
               itemBuilder: (BuildContext context, int index) {
                 print(_imageReview![index].name!);
                 return ExtendedImage.network(
-                  "https://omahdilit.my.id/images/" +
-                      _imageReview![index].name!,
+                  "https://omahdilit.site/images/" + _imageReview![index].name!,
                   fit: BoxFit.fitWidth,
                   cache: true,
                   mode: ExtendedImageMode.gesture,

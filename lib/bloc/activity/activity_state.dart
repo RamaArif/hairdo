@@ -16,15 +16,6 @@ class ActivityLoaded extends ActivityState {
   const ActivityLoaded(this.listTransaksi);
 }
 
-class TransaksiLoaded extends ActivityState {
-  final Transaksi transaksi;
-  final int index;
-  const TransaksiLoaded(
-    this.transaksi,
-    this.index,
-  );
-}
-
 class ActivityError extends ActivityState {
   final String message;
   const ActivityError(this.message);

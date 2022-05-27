@@ -17,6 +17,7 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
     List<Transaksi> listTransaksi = [];
     Transaksi transaksi = Transaksi();
     Customer customer = Customer();
+
     on<GetActivity>((event, emit) async {
       final SharedPreferences _prefs = await SharedPreferences.getInstance();
       try {
@@ -33,14 +34,15 @@ class ActivityBloc extends Bloc<ActivityEvent, ActivityState> {
         emit(ActivityError("Periksa internet kamu"));
       }
     });
-
-    on<DetailActivity>((event, emit) async {
+    on<RefreshActivity>((event, emit) async {
+      final SharedPreferences _prefs = await SharedPreferences.getInstance();
       try {
+        customer = Customer.fromJson(jsonDecode(_prefs.getString("user")!));
         emit(ActivityLoading());
-        print(event.index.toString());
-        print(jsonEncode(listTransaksi));
-        transaksi = listTransaksi[event.index];
-        emit(TransaksiLoaded(transaksi, event.index));
+        await _apiProvider.fetchActivity(customer.id).then((value) {
+          listTransaksi = value.transaksis!;
+        });
+        emit(ActivityLoaded(ListTransaksi(transaksis: listTransaksi)));
       } on ActivityError {
         emit(ActivityError("Periksa internet kamu"));
       }

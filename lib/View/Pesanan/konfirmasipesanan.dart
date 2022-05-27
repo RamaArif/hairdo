@@ -14,6 +14,7 @@ import 'package:omahdilit/View/ModelHair/allmodel.dart';
 import 'package:omahdilit/View/Pesanan/activity.dart';
 import 'package:omahdilit/View/Pesanan/detailpesanan.dart';
 import 'package:omahdilit/bloc/activity/activity_bloc.dart';
+import 'package:omahdilit/bloc/transaksi/create_transaksi_bloc.dart';
 import 'package:omahdilit/bloc/transaksi/transaksi_bloc.dart';
 import 'package:omahdilit/constant.dart';
 import 'package:omahdilit/model/listalamat.dart';
@@ -44,23 +45,20 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
 
   bool _isCompleted = false;
 
-  late TransaksiBloc _transaksiBloc;
-
   bool _isCheckPrice = false;
 
   @override
   void initState() {
-    _transaksiBloc = TransaksiBloc();
 
-    _transaksiBloc.add(GetCustomer());
+    context.read<CreateTransaksiBloc>().add(GetCustomer());
     super.initState();
     if (widget.barberman != null) {
       _setbarberman = true;
       // _barberman = widget.barberman;
-      _transaksiBloc.add(MitraAddedEvent(widget.barberman));
+      context.read<CreateTransaksiBloc>().add(MitraAddedEvent(widget.barberman));
     } else if (widget.modelHair != null) {
       _setmodelhair = true;
-      _transaksiBloc.add(ModelAddedEvent(widget.modelHair));
+      context.read<CreateTransaksiBloc>().add(ModelAddedEvent(widget.modelHair));
     }
   }
 
@@ -68,45 +66,40 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-
-    
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<TransaksiBloc>(
-      create: (context) => _transaksiBloc,
-      child: BlocListener<TransaksiBloc, TransaksiState>(
-        listener: (context, state) {
-          // TODO: implement listener
-          if (state is OnTransaction) {
-            Navigator.pushAndRemoveUntil(
-                context,
-                CupertinoPageRoute(
-                  builder: (_) => Activity(),
-                ),
-                (route) => false);
+    return BlocListener<CreateTransaksiBloc, CreateTransaksiState>(
+      listener: (context, state) {
+        // TODO: implement listener
+        if (state is OnTransaction) {
+          Navigator.pushReplacement(
+            context,
+            CupertinoPageRoute(
+              builder: (_) => Activity(),
+            ),
+          );
+        }
+      },
+      child: BlocBuilder<CreateTransaksiBloc, CreateTransaksiState>(
+        builder: (context, state) {
+          if (state is CreatetransaksiLoaded) {
+            _transaksi = state.transaksi;
+            _isCompleted = state.isFilled;
+            if (_isCheckPrice) {
+              if (_transaksi.mitra != null && _transaksi.alamat != null) {
+                _checkPrice();
+              }
+            }
+            // if (state.isComplete) {
+            //
+            // }
+            return _buildView(context);
+          } else {
+            return _buildLoading(context);
           }
         },
-        child: BlocBuilder<TransaksiBloc, TransaksiState>(
-          builder: (context, state) {
-            if (state is CreatetransaksiLoaded) {
-            _transaksi = state.transaksi;
-              _isCompleted = state.isFilled;
-              if (_isCheckPrice) {
-                if (_transaksi.mitra != null && _transaksi.alamat != null) {
-                  _checkPrice();
-                }
-              }
-              // if (state.isComplete) {
-              //
-              // }
-              return _buildView(context);
-            } else {
-              return _buildLoading(context);
-            }
-          },
-        ),
       ),
     );
   }
@@ -156,7 +149,7 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
                 onTap: () {
                   // print(jsonEncode(_transaksi));
                   if (_isCompleted) {
-                    _transaksiBloc.add(CreateTransaksiEvent(_transaksi));
+                    context.read<TransaksiBloc>().add(CreateOrderEvent(_transaksi));
                   }
                 },
                 child: Container(
@@ -362,9 +355,8 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(12),
                                   child: CachedNetworkImage(
-                                    imageUrl:
-                                        "https://omahdilit.my.id/images/" +
-                                            _transaksi.mitra!.photo.toString(),
+                                    imageUrl: "https://omahdilit.site/images/" +
+                                        _transaksi.mitra!.photo.toString(),
                                     height: tinggi / 8,
                                     width: tinggi / 8,
                                     fit: BoxFit.cover,
@@ -518,9 +510,8 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(12),
                                   child: CachedNetworkImage(
-                                    imageUrl:
-                                        "https://omahdilit.my.id/images/" +
-                                            _transaksi.model!.photo1!,
+                                    imageUrl: "https://omahdilit.site/images/" +
+                                        _transaksi.model!.photo1!,
                                     height: tinggi / 7,
                                     width: tinggi / 7,
                                     fit: BoxFit.cover,
@@ -767,7 +758,7 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
     if (result != null) {
       _setmodelhair = true;
 
-      _transaksiBloc.add(ModelAddedEvent(result));
+      context.read<CreateTransaksiBloc>().add(ModelAddedEvent(result));
     }
 
     // setState(() {
@@ -791,7 +782,7 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
       (value) {
         if (value != null) {
           _setbarberman = true;
-          _transaksiBloc.add(MitraAddedEvent(value));
+          context.read<CreateTransaksiBloc>().add(MitraAddedEvent(value));
           _isCheckPrice = true;
         }
         // setState(() {
@@ -1212,14 +1203,14 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
     ).then((value) {
       if (value != null) {
         _setalamat = true;
-        _transaksiBloc.add(AlamatAddedEvent(value));
+        context.read<CreateTransaksiBloc>().add(AlamatAddedEvent(value));
         _isCheckPrice = true;
       }
     });
   }
 
   Future<void> _checkPrice() async {
-    _transaksiBloc.add(CountPriceEvent(_transaksi));
+    context.read<CreateTransaksiBloc>().add(CountPriceEvent(_transaksi));
     _isCheckPrice = false;
   }
 

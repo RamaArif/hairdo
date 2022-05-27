@@ -93,7 +93,7 @@ class _ReviewBarbermanState extends State<ReviewBarberman> {
                                 borderRadius: BorderRadius.circular(100),
                                 child: CachedNetworkImage(
                                   imageUrl:
-                                      "https://omahdilit.my.id/images/${_review.customer!.photo}",
+                                      "https://omahdilit.site/images/${_review.customer!.photo}",
                                   width: lebar / 7,
                                   height: lebar / 7,
                                   fit: BoxFit.cover,
@@ -205,7 +205,7 @@ class _ReviewBarbermanState extends State<ReviewBarberman> {
                                         borderRadius: BorderRadius.circular(12),
                                         child: CachedNetworkImage(
                                           imageUrl:
-                                              "https://omahdilit.my.id/images/" +
+                                              "https://omahdilit.site/images/" +
                                                   _review.image![index].name!,
                                           fit: BoxFit.cover,
                                           width: lebar / 4,

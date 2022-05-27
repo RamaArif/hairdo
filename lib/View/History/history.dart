@@ -4,7 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
+import 'package:omahdilit/View/Pesanan/detailpesanan.dart';
 import 'package:omahdilit/bloc/history/history_bloc.dart';
+import 'package:omahdilit/bloc/transaksi/create_transaksi_bloc.dart';
+import 'package:omahdilit/bloc/transaksi/transaksi_bloc.dart';
 import 'package:omahdilit/constant.dart';
 import 'package:omahdilit/model/transaksi.dart';
 import 'package:shimmer/shimmer.dart';
@@ -62,7 +65,15 @@ class _HistoryState extends State<History> {
         itemBuilder: (BuildContext context, int index) {
           Transaksi _transaksi = listTransaksi.transaksis![index];
           return InkWell(
-            onTap: () {},
+            onTap: () {
+              context.read<TransaksiBloc>().add(FetchOrder(_transaksi.id!));
+              Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (_) => DetailPesanan(
+                            isHistory: true,
+                          )));
+            },
             child: Card(
               elevation: 2,
               margin: EdgeInsets.symmetric(
@@ -86,7 +97,7 @@ class _HistoryState extends State<History> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(100),
                             child: CachedNetworkImage(
-                              imageUrl: "https://omahdilit.my.id/images/" +
+                              imageUrl: "https://omahdilit.site/images/" +
                                   _transaksi.model!.photo1!,
                               fit: BoxFit.cover,
                               width: lebar / 7.5,

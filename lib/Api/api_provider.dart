@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:omahdilit/model/baseresponse.dart';
@@ -16,7 +18,7 @@ import 'package:omahdilit/model/transaksi.dart';
 
 class ApiProvider extends ChangeNotifier {
   final Dio _dio = Dio();
-  final String _baseUrl = "https://omahdilit.my.id/api/";
+  final String _baseUrl = "https://omahdilit.site/api/";
   final String _pickerUrl = "https://api.rajaongkir.com/starter/";
   final String _apiPicker = "2604e0d2b5bcd3c6b146c36b9447bd25";
 
@@ -27,8 +29,10 @@ class ApiProvider extends ChangeNotifier {
         data: {'number': number, 'pushtoken': pushToken},
         options: Options(contentType: Headers.formUrlEncodedContentType),
       );
+      print(jsonEncode(response.data));
       return LoginResponse.fromJson(response.data);
-    } catch (error) {
+    } catch (e) {
+      print(e);
       return LoginResponse.withError("Data not found / Connection issue");
     }
   }
@@ -44,12 +48,14 @@ class ApiProvider extends ChangeNotifier {
       Response response = await _dio.post(
         _baseUrl + "daftaruser",
         data: customer,
-        // options: Options(headers: {
-        //   HttpHeaders.contentTypeHeader: "application/json",
-        // }),
+        options: Options(
+          contentType: Headers.jsonContentType,
+        ),
       );
+      print(jsonEncode(response.data));
       return BaseResponse.fromJson(response.data);
-    } catch (error, stacktrace) {
+    } catch (e, stacktrace) {
+      print(e);
       return BaseResponse.withError("Data not found / Connection issue");
     }
   }
@@ -199,6 +205,34 @@ class ApiProvider extends ChangeNotifier {
     try {
       Response response = await _dio.post(
         _baseUrl + "newtransaksi",
+        data: _transaksi,
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      // print(response);
+      return Transaksi.fromJson(response.data);
+    } catch (error) {
+      print(error);
+      return Transaksi.withError("Data not found / Connection issue");
+    }
+  }
+
+  Future<Transaksi> detailTransaksi(String id) async {
+    try {
+      Response response = await _dio.get(
+        _baseUrl + "fetch-transaksi/$id",
+      );
+      // print(response);
+      return Transaksi.fromJson(response.data);
+    } catch (error) {
+      print(error);
+      return Transaksi.withError("Data not found / Connection issue");
+    }
+  }
+
+  Future<Transaksi> cancelTransaksi(Transaksi _transaksi) async {
+    try {
+      Response response = await _dio.post(
+        _baseUrl + "customerCancelOrder",
         data: _transaksi,
         options: Options(contentType: Headers.jsonContentType),
       );
