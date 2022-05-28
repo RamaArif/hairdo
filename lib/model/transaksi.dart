@@ -3,6 +3,7 @@ import 'package:omahdilit/model/detailmitra.dart';
 import 'package:omahdilit/model/listalamat.dart';
 import 'package:omahdilit/model/listmitra.dart';
 import 'package:omahdilit/model/modelhair.dart';
+import 'package:omahdilit/model/review.dart';
 
 class ListTransaksi {
   List<Transaksi>? transaksis;
@@ -45,12 +46,14 @@ class Transaksi {
   int? hargalayanan;
   int? jarak;
   String? status;
+  String? endDate;
   String? createdAt;
   String? updatedAt;
   Mitra? mitra;
   Alamat? alamat;
   Customer? customer;
   ModelHair? model;
+  ReviewModel? review;
 
   Transaksi(
       {this.id,
@@ -66,12 +69,14 @@ class Transaksi {
       this.hargalayanan,
       this.jarak,
       this.status,
+      this.endDate,
       this.createdAt,
       this.updatedAt,
       this.mitra,
       this.alamat,
       this.customer,
-      this.model});
+      this.model,
+      this.review});
 
   Transaksi.withError(String errorMessage) {
     errorMessage = errorMessage;
@@ -91,6 +96,7 @@ class Transaksi {
     hargalayanan = json['hargalayanan'];
     jarak = json['jarak'];
     status = json['status'];
+    endDate = json['end_date'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     mitra = json['mitra'] != null ? new Mitra.fromJson(json['mitra']) : null;
@@ -101,6 +107,8 @@ class Transaksi {
         : null;
     model =
         json['model'] != null ? new ModelHair.fromJson(json['model']) : null;
+    review =
+        json['review'] != null ? new ReviewModel.fromJson(json['review']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -118,6 +126,7 @@ class Transaksi {
     data['hargalayanan'] = this.hargalayanan;
     data['jarak'] = this.jarak;
     data['status'] = this.status;
+    data['end_date'] = this.endDate;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     if (this.mitra != null) {
@@ -131,6 +140,9 @@ class Transaksi {
     }
     if (this.model != null) {
       data['model'] = this.model!.toJson();
+    }
+    if (this.review != null) {
+      data['review'] = this.review!.toJson();
     }
     return data;
   }

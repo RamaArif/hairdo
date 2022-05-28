@@ -632,6 +632,38 @@ class _DetailPesananState extends State<DetailPesanan> {
                 ),
               ),
       );
+    } else if (transaksi.status == 'finished') {
+      final birthday = DateTime.parse(transaksi.endDate!);
+      final date2 = DateTime.now();
+      final difference = date2.difference(birthday).inDays;
+
+      if (transaksi.review == null && difference < 3) {
+        return Container(
+          width: lebar,
+          padding: EdgeInsets.symmetric(
+            horizontal: marginHorizontal,
+            vertical: marginVertical,
+          ),
+          color: Colors.white,
+          child: GestureDetector(
+            onTap: () {},
+            child: Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: blue, borderRadius: BorderRadius.circular(5)),
+              child: Text(
+                "Tulis Review",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        );
+      } else {
+        return Container();
+      }
     } else {
       return Container();
     }
