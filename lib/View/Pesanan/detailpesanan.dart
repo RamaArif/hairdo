@@ -8,16 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:omahdilit/bloc/activity/activity_bloc.dart';
-import 'package:omahdilit/bloc/transaksi/create_transaksi_bloc.dart';
 import 'package:omahdilit/bloc/transaksi/transaksi_bloc.dart';
 import 'package:omahdilit/constant.dart';
 import 'package:omahdilit/model/transaksi.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class DetailPesanan extends StatefulWidget {
-  bool? isHistory;
-  DetailPesanan({Key? key, this.isHistory}) : super(key: key);
+  bool isHistory;
+  DetailPesanan({Key? key, this.isHistory = false}) : super(key: key);
 
   @override
   State<DetailPesanan> createState() => _DetailPesananState();
@@ -67,8 +65,7 @@ class _DetailPesananState extends State<DetailPesanan> {
           style: TextStyle(color: greyDark, fontSize: 18.0),
         ),
       ),
-      bottomSheet:
-          widget.isHistory == null ? bottomSheet(transaksi) : SizedBox(),
+      bottomSheet: widget.isHistory ? bottomSheet(transaksi) : SizedBox(),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -538,14 +535,10 @@ class _DetailPesananState extends State<DetailPesanan> {
                       ),
                     ],
                   ),
-                  widget.isHistory == null
-                      ? SizedBox(
-                          height: marginVertical * 3,
-                        )
-                      : SizedBox(
-                          height: marginVertical,
-                        ),
                 ],
+              ),
+              SizedBox(
+                height: marginVertical * 4.5,
               )
             ],
           ),
@@ -555,7 +548,7 @@ class _DetailPesananState extends State<DetailPesanan> {
   }
 
   Container bottomSheet(Transaksi transaksi) {
-    if (transaksi.status != "finished" || transaksi.status != "rejected") {
+    if (transaksi.status == "waiting" || transaksi.status == "confirmed") {
       return Container(
         height: tinggi * .075,
         width: lebar,
@@ -633,34 +626,40 @@ class _DetailPesananState extends State<DetailPesanan> {
               ),
       );
     } else if (transaksi.status == 'finished') {
+      print("tanggal => " + transaksi.endDate!);
       final birthday = DateTime.parse(transaksi.endDate!);
       final date2 = DateTime.now();
       final difference = date2.difference(birthday).inDays;
+      print("difference => " + difference.toString());
 
       if (transaksi.review == null && difference < 3) {
         return Container(
-          width: lebar,
-          padding: EdgeInsets.symmetric(
-            horizontal: marginHorizontal,
-            vertical: marginVertical,
-          ),
-          color: Colors.white,
-          child: GestureDetector(
-            onTap: () {},
-            child: Container(
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  color: blue, borderRadius: BorderRadius.circular(5)),
-              child: Text(
-                "Tulis Review",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+            width: lebar,
+            padding: EdgeInsets.symmetric(
+              horizontal: marginHorizontal,
+              vertical: marginVertical,
             ),
-          ),
-        );
+            color: Colors.white,
+            child: Wrap(
+              children: [
+                GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: marginVertical / 2),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: blue, borderRadius: BorderRadius.circular(5)),
+                    child: Text(
+                      "Tulis Review",
+                      style: textStyle.copyWith(
+                        color: Colors.white,
+                        fontWeight: semiBold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ));
       } else {
         return Container();
       }

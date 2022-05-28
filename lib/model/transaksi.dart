@@ -96,7 +96,7 @@ class Transaksi {
     hargalayanan = json['hargalayanan'];
     jarak = json['jarak'];
     status = json['status'];
-    endDate = json['end_date'];
+    endDate = json['end_time'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     mitra = json['mitra'] != null ? new Mitra.fromJson(json['mitra']) : null;
@@ -107,8 +107,9 @@ class Transaksi {
         : null;
     model =
         json['model'] != null ? new ModelHair.fromJson(json['model']) : null;
-    review =
-        json['review'] != null ? new ReviewModel.fromJson(json['review']) : null;
+    review = json['review'] != null
+        ? new ReviewModel.fromJson(json['review'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -126,7 +127,7 @@ class Transaksi {
     data['hargalayanan'] = this.hargalayanan;
     data['jarak'] = this.jarak;
     data['status'] = this.status;
-    data['end_date'] = this.endDate;
+    data['end_time'] = this.endDate;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     if (this.mitra != null) {
