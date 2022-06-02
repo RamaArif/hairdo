@@ -61,6 +61,12 @@ class _RegisterState extends State<Register> {
       child: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           // TODO: implement listener
+          if (state is ProfileSuccess) {
+            Navigator.pushAndRemoveUntil(
+                context,
+                CupertinoPageRoute(builder: (_) => BottomNav()),
+                (route) => false);
+          }
         },
         builder: (context, state) {
           if (state is ProfileLoading) {
@@ -89,24 +95,6 @@ class _RegisterState extends State<Register> {
                         sharedPreferences.getString("pushToken");
                     _customer.uid = sharedPreferences.getString("uid");
                     context.read<ProfileBloc>().add(Registering(_customer));
-
-                    // if (result.error == false) {
-                    //   EasyLoading.showSuccess("Registrasi berhasil");
-                    //   await sharedPreferences
-                    //       .setString("user", jsonEncode(_customer.toJson()))
-                    //       .then((value) {
-                    //     Future.delayed(Duration(milliseconds: 1000)).then(
-                    //       (value) {
-                    //         Navigator.pushAndRemoveUntil(
-                    //             context,
-                    //             CupertinoPageRoute(
-                    //               builder: (_) => BottomNav(),
-                    //             ),
-                    //             (route) => false);
-                    //       },
-                    //     );
-                    //   });
-                    // }
                   }
                 },
                 child: Container(

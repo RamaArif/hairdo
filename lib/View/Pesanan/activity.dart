@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:omahdilit/View/Pesanan/detailpesanan.dart';
@@ -27,7 +28,6 @@ class _ActivityState extends State<Activity> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    context.read<ActivityBloc>().add(GetActivity());
   }
 
   RefreshController _refreshController =
@@ -52,7 +52,10 @@ class _ActivityState extends State<Activity> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Color(0xFF6F6F6F)),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.white,
+          statusBarIconBrightness: Brightness.dark,
+        ),
         title: Text(
           "Pesanan Kamu",
           style: TextStyle(color: Color(0xFF6F6F6F), fontSize: 18.0),
@@ -64,7 +67,18 @@ class _ActivityState extends State<Activity> {
             if (_refreshController.isRefresh) {
               _refreshController.refreshCompleted();
             }
-            return _buildView(state.listTransaksi);
+            if (state.listTransaksi.transaksis!.isNotEmpty) {
+              return _buildView(state.listTransaksi);
+            } else {
+              return Center(
+                child: Text(
+                  "Kamu belum punya riwayat pesanan",
+                  style: textStyle.copyWith(
+                    color: textAccent,
+                  ),
+                ),
+              );
+            }
           } else if (state is ActivityError) {}
           return _buildLoading();
         },

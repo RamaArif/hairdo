@@ -7,6 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:omahdilit/Api/api_provider.dart';
 import 'package:omahdilit/View/FormAlamat/pinLocation.dart';
+import 'package:omahdilit/bloc/alamat/alamat_bloc.dart';
 import 'package:omahdilit/bloc/provcity/city_bloc.dart';
 import 'package:omahdilit/bloc/provcity/province_bloc.dart';
 import 'package:omahdilit/constant.dart';
@@ -17,8 +18,15 @@ import 'package:shimmer/shimmer.dart';
 
 class FormAlamat extends StatefulWidget {
   final String uid;
+  final isEdit;
+  Alamat? alamat;
 
-  const FormAlamat({Key? key, required this.uid}) : super(key: key);
+  FormAlamat({
+    Key? key,
+    required this.uid,
+    this.isEdit = false,
+    this.alamat,
+  }) : super(key: key);
 
   @override
   _FormAlamatState createState() => _FormAlamatState();
@@ -27,6 +35,7 @@ class FormAlamat extends StatefulWidget {
 class _FormAlamatState extends State<FormAlamat> {
   bool isProv = false;
   Provinsi? _provinsi;
+  Alamat? alamat;
 
   int indexProvince = 0, indexCity = 0;
   bool isCity = false;
@@ -41,6 +50,24 @@ class _FormAlamatState extends State<FormAlamat> {
   TextEditingController _alamatController = new TextEditingController();
 
   final ApiProvider _apiProvider = ApiProvider();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (widget.isEdit) {
+      alamat = Alamat.fromJson(jsonDecode(jsonEncode(widget.alamat!)));
+      _nameController.text = alamat!.nama.toString();
+      _numberController.text = alamat!.noTelp.toString();
+      _kecamatanController.text = alamat!.kecamatan!;
+      _tagController.text = alamat!.tag!;
+      _alamatController.text = alamat!.alamat!;
+      latLng = LatLng(alamat!.lat!, alamat!.lng!);
+      isPin = true;
+      utama = alamat!.utama == 1;
+      context.read<ProvinceBloc>().add(GetProvince());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +110,7 @@ class _FormAlamatState extends State<FormAlamat> {
                   _kecamatanController.text.isNotEmpty &&
                   _tagController.text.isNotEmpty &&
                   _alamatController.text.isNotEmpty) {
-                Alamat alamat = Alamat(
+                alamat = Alamat(
                     uidCustomer: widget.uid,
                     tag: _tagController.text,
                     nama: _nameController.text,
@@ -95,19 +122,25 @@ class _FormAlamatState extends State<FormAlamat> {
                     lat: latLng!.latitude,
                     lng: latLng!.longitude,
                     utama: utama ? 1 : 0);
-                print(alamat.tag.toString());
-                print(alamat.nama.toString());
-                print(alamat.noTelp.toString());
-                print(alamat.alamat.toString());
-                print(alamat.provinsi.toString());
-                print(alamat.kota.toString());
-                print(alamat.kecamatan.toString());
-                print(alamat.lat.toString());
-                print(alamat.lng.toString());
-                print(alamat.utama.toString());
-                final result = await ApiProvider().createAlamat(alamat);
-                if (result.alamat!.isNotEmpty) {
-                  Navigator.pop(context, alamat);
+                print(alamat!.tag.toString());
+                print(alamat!.nama.toString());
+                print(alamat!.noTelp.toString());
+                print(alamat!.alamat.toString());
+                print(alamat!.provinsi.toString());
+                print(alamat!.kota.toString());
+                print(alamat!.kecamatan.toString());
+                print(alamat!.lat.toString());
+                print(alamat!.lng.toString());
+                print(alamat!.utama.toString());
+                if (!widget.isEdit) {
+                  final result = await ApiProvider().createAlamat(alamat!);
+                  if (result.alamat!.isNotEmpty) {
+                    Navigator.pop(context, alamat);
+                  }
+                } else {
+                  alamat!.id = widget.alamat!.id!;
+                  context.read<AlamatBloc>().add(EditAlamatEvent(alamat!));
+                  Navigator.pop(context);
                 }
               } else {
                 EasyLoading.showError("Pastikan semua form terisi");
@@ -430,12 +463,59 @@ class _FormAlamatState extends State<FormAlamat> {
                       ],
                     ),
                   ),
+                  widget.isEdit ? initEditProvince() : SizedBox(),
+                  widget.isEdit ? initEditCity() : SizedBox(),
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget initEditProvince() {
+    return BlocListener<ProvinceBloc, ProvinceState>(
+      listener: (context, state) {
+        // TODO: implement listener
+        if (state is ProvLoaded) {
+          print("Init Prov");
+          state.listProvinsi.rajaongkir!.results!.map((item) {
+            print("init Current Prov");
+            if (item.province == alamat!.provinsi) {
+              print(jsonEncode(item));
+              setState(() {
+                isProv = true;
+                _provinsi = item;
+              });
+              context.read<CityBloc>().add(GetCity(item.provinceId!));
+            }
+          }).toList();
+        }
+      },
+      child: SizedBox(),
+    );
+  }
+
+  Widget initEditCity() {
+    return BlocListener<CityBloc, CityState>(
+      listener: (context, state) {
+        // TODO: implement listener
+        if (state is CityLoaded) {
+          print("Init City");
+          state.listKota.rajaongkir!.results!.map((item) {
+            print("init Current City");
+            if (item.cityName == alamat!.kota) {
+              print(jsonEncode(item));
+              setState(() {
+                isCity = true;
+                _kota = item;
+              });
+            }
+          }).toList();
+        }
+      },
+      child: SizedBox(),
     );
   }
 

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:omahdilit/Api/api_provider.dart';
 import 'package:omahdilit/constant.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
@@ -95,7 +96,10 @@ class _AllModelHairState extends State<AllModelHair>
           onPressed: () => Navigator.of(context).pop(),
         ),
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Color(0xFF6F6F6F)),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.white,
+          statusBarIconBrightness: Brightness.dark,
+        ),
         title: Text(
           "Model Rambut",
           style: TextStyle(color: Color(0xFF6F6F6F), fontSize: 18.0),

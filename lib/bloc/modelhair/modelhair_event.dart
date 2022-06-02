@@ -6,3 +6,7 @@ abstract class ModelhairEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class FetchHairHome extends ModelhairEvent {}
+
+class FetchHair extends ModelhairEvent {}

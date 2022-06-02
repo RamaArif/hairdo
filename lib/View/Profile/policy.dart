@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:omahdilit/constant.dart';
 
@@ -14,7 +15,7 @@ class _PolicyState extends State<Policy> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(
@@ -25,8 +26,11 @@ class _PolicyState extends State<Policy> {
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        backgroundColor: Colors.grey.shade100,
-        iconTheme: IconThemeData(color: Color(0xFF6F6F6F)),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.white,
+          statusBarIconBrightness: Brightness.dark,
+        ),
+        backgroundColor: Colors.white,
         title: Text(
           widget.isPolicy
               ? "Kebijakan Privasi"

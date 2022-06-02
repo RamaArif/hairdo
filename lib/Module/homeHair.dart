@@ -3,8 +3,11 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:omahdilit/Api/api_provider.dart';
 import 'package:omahdilit/View/ModelHair/detailmodel.dart';
+import 'package:omahdilit/bloc/modelhair/modelhair_bloc.dart';
 import 'package:omahdilit/constant.dart';
 import 'package:omahdilit/model/listmodelrambut.dart';
 import 'package:omahdilit/model/modelhair.dart';
@@ -34,11 +37,10 @@ class _HomeHairState extends State<HomeHair> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<ModelHome>(
-      future: ApiProvider().fetchModelHome(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          ModelHome _list = snapshot.data!;
+    return BlocBuilder<ModelhairBloc, ModelhairState>(
+      builder: (context, state) {
+        if (state is ModelhairSuccess) {
+          ModelHome _list = state.modelHome;
           return ListView.builder(
             itemCount: _listHair.length,
             scrollDirection: Axis.horizontal,
@@ -135,18 +137,12 @@ class _HomeHairState extends State<HomeHair> {
             },
           );
         } else {
-          return Shimmer.fromColors(
+          return Center(
             child: Container(
-              width: lebar / 2.35,
-              height: tinggi,
-              alignment: Alignment.centerLeft,
-              margin: EdgeInsets.symmetric(horizontal: marginHorizontal / 1.5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              width: lebar / 3,
+              height: lebar / 3,
+              child: LottieBuilder.asset("assets/loading.json"),
             ),
-            baseColor: Colors.grey,
-            highlightColor: Colors.grey.shade300,
           );
         }
       },

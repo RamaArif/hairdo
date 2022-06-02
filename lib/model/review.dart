@@ -1,4 +1,6 @@
 import 'package:omahdilit/model/customer.dart';
+import 'package:omahdilit/model/detailmitra.dart';
+import 'package:omahdilit/model/modelhair.dart';
 import 'package:omahdilit/model/transaksi.dart';
 
 class ListReview {
@@ -30,31 +32,44 @@ class ListReview {
 
 class ReviewModel {
   int? id;
-  int? idtransaksi;
+  int? idmodel;
+  int? idmitra;
+  int? idcustomer;
   int? rating;
   String? review;
   String? createdAt;
   String? updatedAt;
+  Mitra? mitra;
+  ModelHair? model;
   Customer? customer;
   List<ImageReview>? image;
 
   ReviewModel(
       {this.id,
-      this.idtransaksi,
+      this.idmodel,
+      this.idmitra,
+      this.idcustomer,
       this.rating,
       this.review,
       this.createdAt,
-      this.image,
       this.updatedAt,
-      this.customer});
+      this.mitra,
+      this.model,
+      this.customer,
+      this.image});
 
   ReviewModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    idtransaksi = json['idtransaksi'];
+    idmodel = json['idmodel'];
+    idmitra = json['idmitra'];
+    idcustomer = json['idcustomer'];
     rating = json['rating'];
     review = json['review'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
+    mitra = json['mitra'] != null ? new Mitra.fromJson(json['mitra']) : null;
+    model =
+        json['model'] != null ? new ModelHair.fromJson(json['model']) : null;
     customer = json['customer'] != null
         ? new Customer.fromJson(json['customer'])
         : null;
@@ -69,11 +84,19 @@ class ReviewModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['idtransaksi'] = this.idtransaksi;
+    data['idmodel'] = this.idmodel;
+    data['idmitra'] = this.idmitra;
+    data['idcustomer'] = this.idcustomer;
     data['rating'] = this.rating;
     data['review'] = this.review;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    if (this.mitra != null) {
+      data['mitra'] = this.mitra!.toJson();
+    }
+    if (this.model != null) {
+      data['model'] = this.model!.toJson();
+    }
     if (this.customer != null) {
       data['customer'] = this.customer!.toJson();
     }

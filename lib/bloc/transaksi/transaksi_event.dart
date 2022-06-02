@@ -27,3 +27,10 @@ class FetchOrder extends TransaksiEvent {
   @override
   List<Object> get props => [transaksi];
 }
+
+class PostReview extends TransaksiEvent{
+  final ReviewModel reviewModel;
+  PostReview(this.reviewModel);
+  @override
+  List<Object> get props => [reviewModel];
+}

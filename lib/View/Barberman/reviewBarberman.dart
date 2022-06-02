@@ -3,10 +3,12 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:omahdilit/Api/api_provider.dart';
 import 'package:omahdilit/View/Foto/detailfoto.dart';
 import 'package:omahdilit/model/listmitra.dart';
 import 'package:omahdilit/model/review.dart';
+import 'package:omahdilit/viewimage.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -45,7 +47,10 @@ class _ReviewBarbermanState extends State<ReviewBarberman> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Color(0xFF6F6F6F)),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.white,
+          statusBarIconBrightness: Brightness.dark,
+        ),
         title: Text(
           "Review Mitra",
           style: TextStyle(color: Color(0xFF6F6F6F), fontSize: 18.0),
@@ -89,14 +94,24 @@ class _ReviewBarbermanState extends State<ReviewBarberman> {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(100),
-                                child: CachedNetworkImage(
-                                  imageUrl:
-                                      "https://omahdilit.site/images/${_review.customer!.photo}",
-                                  width: lebar / 7,
-                                  height: lebar / 7,
-                                  fit: BoxFit.cover,
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (_) => ViewImage(
+                                              image:
+                                                  _review.customer!.photo!)));
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: CachedNetworkImage(
+                                    imageUrl:
+                                        "https://omahdilit.site/images/${_review.customer!.photo}",
+                                    width: lebar / 6.5,
+                                    height: lebar / 6.5,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                               Column(
@@ -152,25 +167,40 @@ class _ReviewBarbermanState extends State<ReviewBarberman> {
                                       ),
                                     ),
                                   ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        left: marginHorizontal / 1.5),
+                                    child: Text(
+                                      "Model : " + _review.model!.namaModel!,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: textAccent,
+                                        fontSize: tinggi / lebar * 6,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               )
                             ],
                           ),
+                          SizedBox(
+                            height: marginVertical / 3,
+                          ),
                           Container(
                             padding: EdgeInsets.symmetric(
                               horizontal: marginHorizontal / 3,
-                              vertical: marginVertical / 1.5,
                             ),
-                            child: Expanded(
-                              child: Text(
-                                _review.review.toString(),
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: tinggi / lebar * 7,
-                                ),
+                            child: Text(
+                              _review.review.toString(),
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: tinggi / lebar * 7,
                               ),
                             ),
+                          ),
+                          SizedBox(
+                            height: marginVertical / 3,
                           ),
                           if (_review.image!.isNotEmpty)
                             Container(
@@ -197,19 +227,31 @@ class _ReviewBarbermanState extends State<ReviewBarberman> {
                                         ),
                                       );
                                     },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: CachedNetworkImage(
-                                          imageUrl:
-                                              "https://omahdilit.site/images/" +
-                                                  _review.image![index].name!,
-                                          fit: BoxFit.cover,
-                                          width: lebar / 4,
-                                          height: lebar / 4,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                                builder: (_) => ViewImage(
+                                                    image: _review
+                                                        .image![index].name!)));
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          child: CachedNetworkImage(
+                                            imageUrl:
+                                                "https://omahdilit.site/images/" +
+                                                    _review.image![index].name!,
+                                            fit: BoxFit.cover,
+                                            width: lebar / 4,
+                                            height: lebar / 4,
+                                          ),
                                         ),
                                       ),
                                     ),

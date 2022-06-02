@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:omahdilit/model/baseresponse.dart';
 import 'package:omahdilit/model/customer.dart';
 import 'package:omahdilit/model/detailmitra.dart';
+import 'package:omahdilit/model/hargamodel.dart';
 import 'package:omahdilit/model/listalamat.dart';
 import 'package:omahdilit/model/listkota.dart';
 import 'package:omahdilit/model/listmitra.dart';
@@ -14,6 +15,7 @@ import 'package:omahdilit/model/loginresponse.dart';
 import 'package:omahdilit/model/modelhair.dart';
 import 'package:omahdilit/model/price.dart';
 import 'package:omahdilit/model/review.dart';
+import 'package:omahdilit/model/spotlight.dart';
 import 'package:omahdilit/model/transaksi.dart';
 
 class ApiProvider extends ChangeNotifier {
@@ -60,6 +62,46 @@ class ApiProvider extends ChangeNotifier {
     }
   }
 
+  Future<BaseResponse> updateProfile(Customer customer) async {
+    print(customer.name);
+    print(customer.email);
+    print(customer.jenkel);
+    print(customer.uid);
+    print(customer.pushtoken);
+    print(customer.number);
+    try {
+      Response response = await _dio.post(
+        _baseUrl + "newEditCustomer",
+        data: customer,
+        options: Options(
+          contentType: Headers.jsonContentType,
+        ),
+      );
+      print(jsonEncode(response.data));
+      return BaseResponse.fromJson(response.data);
+    } catch (e, stacktrace) {
+      print(e);
+      return BaseResponse.withError("Data not found / Connection issue");
+    }
+  }
+
+  Future<Customer> updateAva(String uid, String image) async {
+    try {
+      print("uid => " + uid);
+      print("image => " + image);
+      Response response = await _dio.post(
+        _baseUrl + "editava",
+        data: {"uid": uid, "photo": image},
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      print(response);
+      return Customer.fromJson(response.data);
+    } catch (error) {
+      print(error);
+      throw Exception(error);
+    }
+  }
+
   Future<ListAlamat> createAlamat(Alamat alamat) async {
     try {
       Response response = await _dio.post(
@@ -82,6 +124,43 @@ class ApiProvider extends ChangeNotifier {
     } catch (error) {
       print(error);
       return ListAlamat.withError("Data not found / Connection issue");
+    }
+  }
+
+  Future<ListAlamat> editAlamat(Alamat alamat) async {
+    try {
+      Response response = await _dio.post(
+        _baseUrl + "editAlamat",
+        data: alamat,
+        options: Options(
+          contentType: Headers.jsonContentType,
+        ),
+      );
+      return ListAlamat.fromJson(response.data);
+    } catch (error) {
+      print(error);
+      return ListAlamat.withError("Data not found / Connection issue");
+    }
+  }
+
+  Future<HargaModel> fetchHarga() async {
+    try {
+      Response response = await _dio.get(_baseUrl + "fetchHarga");
+      return HargaModel.fromJson(response.data);
+    } catch (error, stacktrace) {
+      print(error);
+      throw Exception(error);
+    }
+  }
+
+
+  Future<ListSpotlight> fetchSpotlight() async {
+    try {
+      Response response = await _dio.get(_baseUrl + "spotlight");
+      return ListSpotlight.fromJson(response.data);
+    } catch (error, stacktrace) {
+      print(error);
+      throw Exception(error);
     }
   }
 
@@ -257,7 +336,7 @@ class ApiProvider extends ChangeNotifier {
     }
   }
 
-  Future<ListTransaksi> FetchHistory(id) async {
+  Future<ListTransaksi> fetchHistory(id) async {
     try {
       // print(id.toString());
       Response response = await _dio.get(
@@ -267,6 +346,18 @@ class ApiProvider extends ChangeNotifier {
     } catch (error) {
       print(error);
       return ListTransaksi.withError("Data not found / Connection issue");
+    }
+  }
+
+  Future<ReviewModel> createReview(ReviewModel reviewModel) async {
+    try {
+      Response response = await _dio.post(_baseUrl + "createReview",
+          data: reviewModel,
+          options: Options(contentType: Headers.jsonContentType));
+      return ReviewModel.fromJson(response.data);
+    } catch (error) {
+      print(error);
+      throw Exception(error);
     }
   }
 }

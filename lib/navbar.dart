@@ -1,7 +1,13 @@
+import 'dart:ffi';
+
+import 'package:double_back_to_close/double_back_to_close.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omahdilit/View/History/history.dart';
 import 'package:omahdilit/View/Profile/profile.dart';
+import 'package:omahdilit/bloc/harga/harga_bloc.dart';
 import 'package:omahdilit/constant.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
@@ -30,13 +36,23 @@ class _BottomNavState extends State<BottomNav> {
   void initState() {
     super.initState();
     this.view();
+    context.read<HargaBloc>().add(FetchHarga());
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return DoubleBack(
+      message: "Tap 2 kali untuk keluar",
       child: Scaffold(
           backgroundColor: Colors.white,
+          appBar: AppBar(
+            elevation: 0,
+            toolbarHeight: 0,
+            systemOverlayStyle: SystemUiOverlayStyle(
+              statusBarColor: Colors.white,
+              statusBarIconBrightness: Brightness.dark,
+            ),
+          ),
           body: _children.elementAt(_currentIndex),
           bottomNavigationBar: Padding(
             padding: EdgeInsets.symmetric(

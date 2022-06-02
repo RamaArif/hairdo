@@ -8,11 +8,11 @@ abstract class ProfileEvent extends Equatable {
 }
 
 class SignIn extends ProfileEvent {
-  final String phone, code, pushToken;
-  const SignIn(this.phone, this.code, this.pushToken);
+  final String phone, code, pushToken, uid;
+  const SignIn(this.phone, this.code, this.pushToken, this.uid);
 
   @override
-  List<Object> get props => [phone, code, pushToken];
+  List<Object> get props => [phone, code, pushToken, uid];
 }
 
 class Registering extends ProfileEvent {
@@ -21,7 +21,6 @@ class Registering extends ProfileEvent {
 
   @override
   List<Object> get props => [customer];
-
 }
 
 class SetUser extends ProfileEvent {
@@ -30,9 +29,23 @@ class SetUser extends ProfileEvent {
 
   @override
   List<Object> get props => [customer];
+}
+
+class UpdateProfile extends ProfileEvent {
+  final Customer customer;
+  const UpdateProfile(this.customer);
+
+  @override
+  List<Object> get props => [customer];
 
 }
 
-class UpdateProfile extends ProfileEvent {}
+class UpdateAva extends ProfileEvent {
+  final String uid, image;
+  const UpdateAva(this.uid,this.image);
+
+  @override
+  List<Object> get props => [uid,image];
+}
 
 class Logout extends ProfileEvent {}

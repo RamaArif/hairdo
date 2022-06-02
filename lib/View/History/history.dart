@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +11,7 @@ import 'package:omahdilit/bloc/transaksi/create_transaksi_bloc.dart';
 import 'package:omahdilit/bloc/transaksi/transaksi_bloc.dart';
 import 'package:omahdilit/constant.dart';
 import 'package:omahdilit/model/transaksi.dart';
+import 'package:omahdilit/viewimage.dart';
 import 'package:shimmer/shimmer.dart';
 
 class History extends StatefulWidget {
@@ -35,7 +37,10 @@ class _HistoryState extends State<History> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Color(0xFF6F6F6F)),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.white,
+          statusBarIconBrightness: Brightness.dark,
+        ),
         title: Text(
           "Riwayat Pesanan",
           style: TextStyle(color: textAccent, fontSize: 18.0),
@@ -48,7 +53,18 @@ class _HistoryState extends State<History> {
             if (state is HistoryLoading) {
               return _buildLoading();
             } else if (state is HistoryLoaded) {
-              return _buildView(state.listTransaksi);
+              if (state.listTransaksi.transaksis!.isNotEmpty) {
+                return _buildView(state.listTransaksi);
+              } else {
+                return Center(
+                  child: Text(
+                    "Kamu belum punya riwayat pesanan",
+                    style: textStyle.copyWith(
+                      color: textAccent,
+                    ),
+                  ),
+                );
+              }
             } else {
               return Container();
             }
@@ -94,14 +110,23 @@ class _HistoryState extends State<History> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: CachedNetworkImage(
-                              imageUrl: "https://omahdilit.site/images/" +
-                                  _transaksi.model!.photo1!,
-                              fit: BoxFit.cover,
-                              width: lebar / 7.5,
-                              height: lebar / 7.5,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (_) => ViewImage(
+                                          image: _transaksi.model!.photo1!)));
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: CachedNetworkImage(
+                                imageUrl: "https://omahdilit.site/images/" +
+                                    _transaksi.model!.photo1!,
+                                fit: BoxFit.cover,
+                                width: lebar / 7.5,
+                                height: lebar / 7.5,
+                              ),
                             ),
                           ),
                           Column(

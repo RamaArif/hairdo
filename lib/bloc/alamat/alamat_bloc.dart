@@ -23,7 +23,7 @@ class AlamatBloc extends Bloc<AlamatEvent, AlamatState> {
         customer = Customer.fromJson(jsonDecode(_prefs.getString("user")!));
         emit(AlamatLoading());
         listAlamat = await _apiProvider.fetchAlamat(customer.uid);
-        print("Mitra" + jsonEncode(listAlamat));
+        print("Alamat" + jsonEncode(listAlamat));
         emit(AlamatLoaded(listAlamat));
         if (listAlamat.error == true) {
           emit(AlamatError(listAlamat.errorMessage.toString()));
@@ -36,7 +36,20 @@ class AlamatBloc extends Bloc<AlamatEvent, AlamatState> {
       try {
         emit(AlamatLoading());
         final listAlamat = await _apiProvider.createAlamat(event.alamat);
-        print("Mitra" + jsonEncode(listAlamat));
+        print("Alamat" + jsonEncode(listAlamat));
+        emit(AlamatLoaded(listAlamat));
+        if (listAlamat.error == true) {
+          emit(AlamatError(listAlamat.errorMessage.toString()));
+        }
+      } on AlamatError {
+        emit(AlamatError("Gagal memuat data, cek internet kamu "));
+      }
+    });
+    on<EditAlamatEvent>((event, emit) async {
+      try {
+        emit(AlamatLoading());
+        final listAlamat = await _apiProvider.editAlamat(event.alamat);
+        print("Alamat" + jsonEncode(listAlamat));
         emit(AlamatLoaded(listAlamat));
         if (listAlamat.error == true) {
           emit(AlamatError(listAlamat.errorMessage.toString()));

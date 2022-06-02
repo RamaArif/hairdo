@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:omahdilit/View/Login/verification.dart';
+import 'package:omahdilit/View/Profile/policy.dart';
 import 'package:omahdilit/constant.dart';
 
 class Login extends StatefulWidget {
@@ -32,7 +33,7 @@ class _LoginState extends State<Login> {
             margin: EdgeInsets.only(bottom: marginVertical),
             child: MaterialButton(
               onPressed: () {
-                if (_phoneController.text.length > 10) {
+                if (_phoneController.text.length >= 10) {
                   Navigator.pushAndRemoveUntil(
                       context,
                       CupertinoPageRoute(
@@ -156,7 +157,7 @@ class _LoginState extends State<Login> {
                                   fontSize: tinggi / lebar * 8,
                                 ),
                                 decoration: InputDecoration(
-                                    hintText: "Nomor Telepon",
+                                    hintText: "8123456xxxx",
                                     border: OutlineInputBorder(
                                       borderSide: BorderSide(
                                         width: 0,
@@ -187,7 +188,13 @@ class _LoginState extends State<Login> {
                                       "Dengan mendaftar, saya akan menerima "),
                               WidgetSpan(
                                 child: GestureDetector(
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                            builder: (_) =>
+                                                Policy(isPolicy: false)));
+                                  },
                                   child: Text(
                                     "Syarat dan Ketentuan Pengguna",
                                     style: TextStyle(color: primary),

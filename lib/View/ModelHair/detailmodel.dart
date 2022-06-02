@@ -2,9 +2,14 @@ import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omahdilit/View/Pesanan/konfirmasipesanan.dart';
+import 'package:omahdilit/bloc/harga/harga_bloc.dart';
 import 'package:omahdilit/constant.dart';
 import 'package:omahdilit/model/modelhair.dart';
+import 'package:omahdilit/viewimage.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DetailModel extends StatefulWidget {
   const DetailModel({Key? key, required this.modelhair, this.isEdit})
@@ -42,6 +47,14 @@ class _DetailModelState extends State<DetailModel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        toolbarHeight: 0,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.black,
+          statusBarIconBrightness: Brightness.light,
+        ),
+      ),
       bottomSheet: Container(
         height: tinggi / 12,
         decoration: BoxDecoration(
@@ -69,12 +82,31 @@ class _DetailModelState extends State<DetailModel> {
                       "Harga Cukur",
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
-                    Text(
-                      "Rp 15.000",
-                      style: TextStyle(
-                          color: primary,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600),
+                    BlocBuilder<HargaBloc, HargaState>(
+                      builder: (context, state) {
+                        if (state is HargaLoaded) {
+                          return Text(
+                            numberFormat.format(state.hargaModel.harga),
+                            style: TextStyle(
+                                color: primary,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600),
+                          );
+                        } else {
+                          return Shimmer.fromColors(
+                              child: Container(
+                                child: Text(
+                                  "                    ",
+                                  style: TextStyle(
+                                      color: primary,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                              baseColor: greyDark,
+                              highlightColor: greyLight);
+                        }
+                      },
                     )
                   ],
                 ),
@@ -137,10 +169,19 @@ class _DetailModelState extends State<DetailModel> {
                             });
                           }),
                       items: imgList
-                          .map((item) => Image.network(
-                                "https://omahdilit.site/images/" + item,
-                                fit: BoxFit.cover,
-                                width: lebar,
+                          .map((item) => GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (_) =>
+                                              ViewImage(image: item)));
+                                },
+                                child: Image.network(
+                                  "https://omahdilit.site/images/" + item,
+                                  fit: BoxFit.cover,
+                                  width: lebar,
+                                ),
                               ))
                           .toList(),
                     );
@@ -195,6 +236,9 @@ class _DetailModelState extends State<DetailModel> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(
+                          height: marginVertical / 2,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -204,21 +248,21 @@ class _DetailModelState extends State<DetailModel> {
                                   fontWeight: FontWeight.w500,
                                   fontSize: tinggi / lebar * 9),
                             ),
-                            Container(
-                              width: lebar / 10,
-                              height: tinggi / 19,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade300,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(100)),
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  Icons.favorite,
-                                  color: primary,
-                                ),
-                              ),
-                            )
+                            // Container(
+                            //   width: lebar / 10,
+                            //   height: tinggi / 19,
+                            //   decoration: BoxDecoration(
+                            //     color: Colors.grey.shade300,
+                            //     borderRadius:
+                            //         BorderRadius.all(Radius.circular(100)),
+                            //   ),
+                            //   child: Center(
+                            //     child: Icon(
+                            //       Icons.favorite,
+                            //       color: primary,
+                            //     ),
+                            //   ),
+                            // )
                           ],
                         ),
                         Text(_modelHair.namaModel.toString()),

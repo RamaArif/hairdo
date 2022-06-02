@@ -26,7 +26,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             emit(ProfileSuccess(customer));
           } else {
             print("user belum daftar");
-            emit(Unregistered(event.code, event.phone));
+            emit(Unregistered(event.code, event.phone, event.uid));
           }
         });
       } on ProfileError {
@@ -45,8 +45,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             emit(ProfileError("Gagal Registrasi"));
           }
         });
-      } on ProfileError {
-        emit(ProfileError("Periksa internet kamu"));
+      } catch (e) {
+        print(e);
+        throw Exception(e);
       }
     });
 
@@ -57,6 +58,37 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         emit(ProfileSuccess(customer));
       } on ProfileError {
         emit(ProfileError("Periksa internet kamu"));
+      }
+    });
+
+    on<UpdateAva>((event, emit) async {
+      try {
+        emit(ProfileLoading());
+        await _apiProvider.updateAva(event.uid, event.image).then((value) {
+          customer = value;
+          emit(ProfileSuccess(customer));
+        });
+      } catch (e) {
+        print(e);
+        throw Exception(e);
+      }
+    });
+
+    on<UpdateProfile>((event, emit) async {
+      try {
+        emit(ProfileLoading());
+        await _apiProvider.updateProfile(event.customer).then((value) async {
+          if (value.error == false) {
+            customer = event.customer;
+            SharedPrefsServices().saveUser(customer);
+            emit(ProfileSuccess(customer));
+          } else {
+            emit(ProfileError("Gagal Edit Profile"));
+          }
+        });
+      } catch (e) {
+        print(e);
+        throw Exception(e);
       }
     });
   }

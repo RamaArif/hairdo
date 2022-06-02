@@ -18,6 +18,16 @@ class SharedPrefsServices {
     _prefs.setBool('firstOpen', false);
   }
 
+  void savePushToken(String token) async {
+    SharedPreferences _prefs = await prefs;
+    _prefs.setString('pushToken', token);
+  }
+
+  void saveUid(String token) async {
+    SharedPreferences _prefs = await prefs;
+    _prefs.setString('uid', token);
+  }
+
   Future<String?> getUser() async {
     SharedPreferences _pref = await prefs;
     return _pref.getString('user');

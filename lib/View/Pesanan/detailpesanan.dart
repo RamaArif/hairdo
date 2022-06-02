@@ -5,12 +5,19 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:lottie/lottie.dart';
+import 'package:omahdilit/View/Pesanan/konfirmasipesanan.dart';
 import 'package:omahdilit/bloc/activity/activity_bloc.dart';
+import 'package:omahdilit/bloc/history/history_bloc.dart';
 import 'package:omahdilit/bloc/transaksi/transaksi_bloc.dart';
 import 'package:omahdilit/constant.dart';
+import 'package:omahdilit/loading.dart';
+import 'package:omahdilit/model/review.dart';
 import 'package:omahdilit/model/transaksi.dart';
+import 'package:omahdilit/viewimage.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class DetailPesanan extends StatefulWidget {
@@ -22,6 +29,7 @@ class DetailPesanan extends StatefulWidget {
 }
 
 class _DetailPesananState extends State<DetailPesanan> {
+  final TextEditingController reviewController = TextEditingController();
   late final int _index;
   int _step = 1;
 
@@ -39,6 +47,8 @@ class _DetailPesananState extends State<DetailPesanan> {
         if (state is TransaksiLoaded) {
           print(jsonEncode(state.transaksi));
           return _buildView(context, state.transaksi);
+        } else if (state is TransaksiLoading) {
+          return LoadingBuilder();
         }
         return Container();
       },
@@ -59,13 +69,16 @@ class _DetailPesananState extends State<DetailPesanan> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Color(0xFF6F6F6F)),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.white,
+          statusBarIconBrightness: Brightness.dark,
+        ),
         title: Text(
           "Detail Pesanan Kamu",
           style: TextStyle(color: greyDark, fontSize: 18.0),
         ),
       ),
-      bottomSheet: widget.isHistory ? bottomSheet(transaksi) : SizedBox(),
+      bottomSheet: bottomSheet(transaksi),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -99,8 +112,8 @@ class _DetailPesananState extends State<DetailPesanan> {
                   alignment: Alignment.topCenter,
                   child: LottieBuilder.asset(
                     "assets/finish.json",
-                    width: lebar * .5,
-                    height: lebar * .5,
+                    width: lebar * .4,
+                    height: lebar * .4,
                     fit: BoxFit.fitHeight,
                   ),
                 ),
@@ -115,7 +128,7 @@ class _DetailPesananState extends State<DetailPesanan> {
                   ),
                 ),
               SizedBox(
-                height: marginVertical,
+                height: marginVertical / 2,
               ),
               Container(
                 alignment: Alignment.topCenter,
@@ -134,7 +147,7 @@ class _DetailPesananState extends State<DetailPesanan> {
                   ),
                 ),
               ),
-              widget.isHistory == null
+              !widget.isHistory
                   ? Container(
                       width: lebar,
                       margin: EdgeInsets.symmetric(vertical: marginVertical),
@@ -300,14 +313,23 @@ class _DetailPesananState extends State<DetailPesanan> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: "https://omahdilit.site/images/" +
-                          transaksi.mitra!.photo.toString(),
-                      height: lebar * .15,
-                      width: lebar * .15,
-                      fit: BoxFit.cover,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (_) => ViewImage(
+                                  image: transaksi.mitra!.photo.toString())));
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: CachedNetworkImage(
+                        imageUrl: "https://omahdilit.site/images/" +
+                            transaksi.mitra!.photo.toString(),
+                        height: lebar * .15,
+                        width: lebar * .15,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   Container(
@@ -389,14 +411,23 @@ class _DetailPesananState extends State<DetailPesanan> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: "https://omahdilit.site/images/" +
-                          transaksi.model!.photo1!,
-                      height: lebar * .15,
-                      width: lebar * .15,
-                      fit: BoxFit.cover,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (_) => ViewImage(
+                                  image: transaksi.model!.photo1.toString())));
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: CachedNetworkImage(
+                        imageUrl: "https://omahdilit.site/images/" +
+                            transaksi.model!.photo1!,
+                        height: lebar * .15,
+                        width: lebar * .15,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -547,7 +578,8 @@ class _DetailPesananState extends State<DetailPesanan> {
     );
   }
 
-  Container bottomSheet(Transaksi transaksi) {
+  Widget bottomSheet(Transaksi transaksi) {
+    print(transaksi.status);
     if (transaksi.status == "waiting" || transaksi.status == "confirmed") {
       return Container(
         height: tinggi * .075,
@@ -631,40 +663,230 @@ class _DetailPesananState extends State<DetailPesanan> {
       final date2 = DateTime.now();
       final difference = date2.difference(birthday).inDays;
       print("difference => " + difference.toString());
+      print(jsonEncode(transaksi.review));
 
       if (transaksi.review == null && difference < 3) {
         return Container(
-            width: lebar,
-            padding: EdgeInsets.symmetric(
-              horizontal: marginHorizontal,
-              vertical: marginVertical,
-            ),
-            color: Colors.white,
-            child: Wrap(
-              children: [
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: marginVertical / 2),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        color: blue, borderRadius: BorderRadius.circular(5)),
-                    child: Text(
-                      "Tulis Review",
-                      style: textStyle.copyWith(
-                        color: Colors.white,
-                        fontWeight: semiBold,
-                      ),
+          width: lebar,
+          padding: EdgeInsets.symmetric(
+            horizontal: marginHorizontal,
+            vertical: marginVertical,
+          ),
+          color: Colors.white,
+          child: Wrap(
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  print("tapped");
+                  await reviewModalBottomSheet(transaksi);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: marginVertical / 2),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: blue, borderRadius: BorderRadius.circular(5)),
+                  child: Text(
+                    "Tulis Review",
+                    style: textStyle.copyWith(
+                      color: Colors.white,
+                      fontWeight: semiBold,
                     ),
                   ),
                 ),
-              ],
-            ));
+              ),
+            ],
+          ),
+        );
       } else {
-        return Container();
+        return Container(
+          width: lebar,
+          padding: EdgeInsets.symmetric(
+            horizontal: marginHorizontal,
+            vertical: marginVertical,
+          ),
+          color: Colors.white,
+          child: Wrap(
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  print("tapped");
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (_) => KonfirmasiPesanan(
+                                barberman: transaksi.mitra,
+                              )));
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: marginVertical / 2),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: blue, borderRadius: BorderRadius.circular(5)),
+                  child: Text(
+                    "Pesan Lagi",
+                    style: textStyle.copyWith(
+                      color: Colors.white,
+                      fontWeight: semiBold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
       }
     } else {
-      return Container();
+      return Container(
+        height: 1,
+      );
     }
+  }
+
+  reviewModalBottomSheet(Transaksi transaksi) async {
+    int? rate;
+    bool isLoading = false;
+    await showModalBottomSheet(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+      ),
+      context: context,
+      elevation: 1,
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: StatefulBuilder(builder: (context, refreshState) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: marginHorizontal,
+                    vertical: marginVertical,
+                  ),
+                  child: Wrap(
+                    children: [
+                      Text(
+                        "Review Pesananmu",
+                        style: textStyle.copyWith(
+                          color: black,
+                          fontSize: tinggi / lebar * 8,
+                        ),
+                      ),
+                      SizedBox(
+                        height: marginVertical * 2,
+                      ),
+                      Center(
+                        child: RatingBar.builder(
+                          initialRating: 3,
+                          minRating: 1,
+                          direction: Axis.horizontal,
+                          itemCount: 5,
+                          itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                          itemBuilder: (context, _) => Icon(
+                            CupertinoIcons.star_fill,
+                            color: Colors.amber,
+                          ),
+                          glowColor: Colors.amber,
+                          updateOnDrag: true,
+                          onRatingUpdate: (rating) {
+                            rate = rating.toInt();
+                            print(rate);
+                          },
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: marginVertical),
+                        child: TextFormField(
+                          controller: reviewController,
+                          maxLines: 3,
+                          minLines: 1,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: InputDecoration(
+                            hintText: "Beri ulasanmu tentang layanan mitra ini",
+                            hintStyle: textStyle.copyWith(
+                                color: greyLight, fontSize: tinggi / lebar * 7),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: greyDark,
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            refreshState(
+                              () {},
+                            );
+                          },
+                        ),
+                      ),
+                      BlocListener<TransaksiBloc, TransaksiState>(
+                        listener: (context, state) {
+                          if (state is TransaksiLoaded) {
+                            reviewController.clear();
+                            Navigator.pop(context);
+                            context.read<HistoryBloc>().add(GetHistory());
+                          }
+                        },
+                        child: GestureDetector(
+                          onTap: () async {
+                            if (reviewController.text.isNotEmpty &&
+                                !isLoading) {
+                              refreshState(
+                                () {
+                                  isLoading = true;
+                                },
+                              );
+                              print("tapped");
+                              context
+                                  .read<TransaksiBloc>()
+                                  .add(PostReview(ReviewModel(
+                                    rating: rate,
+                                    review: reviewController.text,
+                                    idcustomer: transaksi.idcustomer,
+                                    idmitra: transaksi.idtukang,
+                                    idmodel: transaksi.idmodel,
+                                  )));
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: marginVertical / 2),
+                            margin:
+                                EdgeInsets.symmetric(vertical: marginVertical),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                color: reviewController.text.isNotEmpty
+                                    ? blue
+                                    : greyLight,
+                                borderRadius: BorderRadius.circular(5)),
+                            child: isLoading
+                                ? CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : Text(
+                                    "Kirim Review",
+                                    style: textStyle.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: semiBold,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: marginVertical * 2,
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+          ),
+        );
+      },
+    );
   }
 }

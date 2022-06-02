@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:lottie/lottie.dart';
 import 'package:omahdilit/Api/api_provider.dart';
 import 'package:omahdilit/View/Barberman/reviewBarberman.dart';
 import 'package:omahdilit/View/Pesanan/konfirmasipesanan.dart';
@@ -16,6 +17,8 @@ import 'package:omahdilit/model/modelhair.dart';
 import 'package:omahdilit/model/review.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timeago/timeago.dart' as timeago;
+
+import '../viewimage.dart';
 
 class HomeFavorite extends StatefulWidget {
   const HomeFavorite({Key? key}) : super(key: key);
@@ -119,24 +122,12 @@ class _HomeFavoriteState extends State<HomeFavorite> {
   }
 
   Widget _buildLoading(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
-      child: ListView.builder(
-          itemCount: 10,
-          scrollDirection: Axis.horizontal,
-          itemExtent: tinggi / 13,
-          padding: EdgeInsets.symmetric(
-            vertical: marginVertical,
-            horizontal: marginHorizontal,
-          ),
-          itemBuilder: (BuildContext context, int index) {
-            return Container(
-              margin: EdgeInsets.symmetric(
-                horizontal: marginHorizontal / 4,
-              ),
-            );
-          }),
+    return Center(
+      child: Container(
+        width: lebar / 3,
+        height: lebar / 3,
+        child: LottieBuilder.asset("assets/loading.json"),
+      ),
     );
   }
 
@@ -185,14 +176,23 @@ class _HomeFavoriteState extends State<HomeFavorite> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: CachedNetworkImage(
-                              imageUrl: "https://omahdilit.site/images/" +
-                                  _mitra.photo.toString(),
-                              width: lebar / 4.7,
-                              height: lebar / 4.7,
-                              fit: BoxFit.cover,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (_) => ViewImage(
+                                          image: _mitra.photo.toString())));
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: CachedNetworkImage(
+                                imageUrl: "https://omahdilit.site/images/" +
+                                    _mitra.photo.toString(),
+                                width: lebar / 4.7,
+                                height: lebar / 4.7,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           Container(
@@ -204,95 +204,84 @@ class _HomeFavoriteState extends State<HomeFavorite> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "${_mitra.name}",
-                                      textAlign: TextAlign.left,
-                                      overflow: TextOverflow.fade,
-                                      maxLines: 1,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        color: textColor,
-                                        fontSize: tinggi / lebar * 7,
-                                      ),
-                                    ),
-                                    snapshot.hasData
-                                        ? mitra.transaksis!.isNotEmpty
-                                            ? Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.star,
-                                                    color: Colors.amber,
-                                                    size: lebar / 23,
-                                                  ),
-                                                  Text(
-                                                    _rating,
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color: textAccent,
-                                                        fontSize:
-                                                            tinggi / lebar * 7),
-                                                  ),
-                                                  Text(
-                                                    " dari $_totalReview review",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: textAccent,
-                                                        fontSize:
-                                                            tinggi / lebar * 5),
-                                                  ),
-                                                ],
-                                              )
-                                            : Container()
-                                        : Shimmer.fromColors(
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.star,
-                                                  color: Colors.amber,
-                                                  size: lebar / 23,
-                                                ),
-                                                Text(
-                                                  "   ",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: textAccent,
-                                                      fontSize:
-                                                          tinggi / lebar * 7),
-                                                ),
-                                                Text(
-                                                  "      ",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: textAccent,
-                                                      fontSize:
-                                                          tinggi / lebar * 5),
-                                                ),
-                                              ],
-                                            ),
-                                            baseColor: Colors.grey,
-                                            highlightColor:
-                                                Colors.grey.shade300,
-                                          ),
-                                  ],
-                                ),
                                 Text(
-                                  _mitra.workshop.toString(),
+                                  "${_mitra.name}",
                                   textAlign: TextAlign.left,
-                                  overflow: TextOverflow.fade,
+                                  overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      color: textAccent,
-                                      fontSize: tinggi / lebar * 7),
+                                    fontWeight: FontWeight.w500,
+                                    color: textColor,
+                                    fontSize: tinggi / lebar * 7,
+                                  ),
                                 ),
+                                _mitra.workshop != null
+                                    ? Text(
+                                        _mitra.workshop!,
+                                        textAlign: TextAlign.left,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w300,
+                                            color: textAccent,
+                                            fontSize: tinggi / lebar * 7),
+                                      )
+                                    : SizedBox(),
+                                snapshot.hasData
+                                    ? mitra.transaksis!.isNotEmpty
+                                        ? Row(
+                                            children: [
+                                              Icon(
+                                                Icons.star,
+                                                color: Colors.amber,
+                                                size: lebar / 23,
+                                              ),
+                                              Text(
+                                                _rating,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: textAccent,
+                                                    fontSize:
+                                                        tinggi / lebar * 7),
+                                              ),
+                                              Text(
+                                                " dari $_totalReview review",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    color: textAccent,
+                                                    fontSize:
+                                                        tinggi / lebar * 5),
+                                              ),
+                                            ],
+                                          )
+                                        : Container()
+                                    : Shimmer.fromColors(
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.star,
+                                              color: Colors.amber,
+                                              size: lebar / 23,
+                                            ),
+                                            Text(
+                                              "   ",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: textAccent,
+                                                  fontSize: tinggi / lebar * 7),
+                                            ),
+                                            Text(
+                                              "      ",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                  color: textAccent,
+                                                  fontSize: tinggi / lebar * 5),
+                                            ),
+                                          ],
+                                        ),
+                                        baseColor: Colors.grey,
+                                        highlightColor: Colors.grey.shade300,
+                                      ),
                               ],
                             ),
                           ),

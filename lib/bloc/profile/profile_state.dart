@@ -12,11 +12,11 @@ class ProfileInitial extends ProfileState {}
 class ProfileLoading extends ProfileState {}
 
 class Unregistered extends ProfileState {
-  final String code, phone;
-  const Unregistered(this.code,this.phone);
+  final String code, phone,uid;
+  const Unregistered(this.code,this.phone,  this.uid);
 
   @override
-  List<Object> get props => [code,phone];
+  List<Object> get props => [code,phone,uid];
 }
 
 class ProfileSuccess extends ProfileState {

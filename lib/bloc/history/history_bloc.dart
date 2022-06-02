@@ -22,7 +22,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
       try {
         customer = Customer.fromJson(jsonDecode(_prefs.getString("user")!));
         emit(HistoryLoading());
-        await _apiProvider.FetchHistory(customer.id).then((value) {
+        await _apiProvider.fetchHistory(customer.id).then((value) {
           print(jsonEncode(value));
           listTransaksi = value;
         });

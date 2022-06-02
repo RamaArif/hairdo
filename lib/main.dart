@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,9 +13,12 @@ import 'package:omahdilit/View/Login/login.dart';
 import 'package:omahdilit/View/Login/register.dart';
 import 'package:omahdilit/bloc/activity/activity_bloc.dart';
 import 'package:omahdilit/bloc/alamat/alamat_bloc.dart';
+import 'package:omahdilit/bloc/harga/harga_bloc.dart';
+import 'package:omahdilit/bloc/modelhair/modelhair_bloc.dart';
 import 'package:omahdilit/bloc/profile/profile_bloc.dart';
 import 'package:omahdilit/bloc/provcity/city_bloc.dart';
 import 'package:omahdilit/bloc/provcity/province_bloc.dart';
+import 'package:omahdilit/bloc/spotlight/spotlight_bloc.dart';
 import 'package:omahdilit/bloc/transaksi/create_transaksi_bloc.dart';
 import 'package:omahdilit/bloc/transaksi/transaksi_bloc.dart';
 import 'package:omahdilit/constant.dart';
@@ -58,6 +62,15 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<AlamatBloc>(
           create: (context) => AlamatBloc(),
+        ),
+        BlocProvider<ModelhairBloc>(
+          create: (context) => ModelhairBloc(),
+        ),
+        BlocProvider<HargaBloc>(
+          create: (context) => HargaBloc(),
+        ),
+        BlocProvider<SpotlightBloc>(
+          create: (context) => SpotlightBloc(),
         ),
       ],
       child: MaterialApp(
@@ -159,6 +172,14 @@ class _SplashscreenState extends State<Splashscreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        elevation: 0,
+        toolbarHeight: 0,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.white,
+          statusBarIconBrightness: Brightness.dark,
+        ),
+      ),
       body: Center(
         child: Container(
           child: Image.asset("assets/logo.png"),

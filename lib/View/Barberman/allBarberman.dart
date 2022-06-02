@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:omahdilit/Api/api_provider.dart';
 import 'package:omahdilit/View/Barberman/reviewBarberman.dart';
 import 'package:omahdilit/View/Pesanan/konfirmasipesanan.dart';
@@ -11,6 +12,7 @@ import 'package:omahdilit/model/listmitra.dart';
 import 'package:omahdilit/model/modelhair.dart';
 import 'package:omahdilit/model/review.dart';
 import 'package:omahdilit/model/transaksi.dart';
+import 'package:omahdilit/viewimage.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -87,51 +89,54 @@ class _AllBarbermanState extends State<AllBarberman>
           onPressed: () => Navigator.of(context).pop(),
         ),
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Color(0xFF6F6F6F)),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.white,
+          statusBarIconBrightness: Brightness.dark,
+        ),
         title: Text(
           "Mitra Hairdo",
           style: TextStyle(color: Color(0xFF6F6F6F), fontSize: 18.0),
         ),
-        actions: [
-          InkWell(
-            child: Container(
-              margin: EdgeInsets.only(
-                  left: marginHorizontal / 20, top: 10, bottom: 10),
-              child: Material(
-                color: Color(0xFFEEEEEE),
-                shape: CircleBorder(),
-                child: IconButton(
-                    onPressed: () {},
-                    icon: ImageIcon(
-                      AssetImage(
-                        "assets/heart.png",
-                      ),
-                      size: 18,
-                    ),
-                    color: greyMain),
-              ),
-            ),
-          ),
-          InkWell(
-            child: Container(
-              margin: EdgeInsets.only(
-                  left: marginHorizontal / 20, top: 10, bottom: 10, right: 15),
-              child: Material(
-                color: Color(0xFFEEEEEE),
-                shape: CircleBorder(),
-                child: IconButton(
-                    onPressed: () {},
-                    icon: ImageIcon(
-                      AssetImage(
-                        "assets/search.png",
-                      ),
-                      size: 18,
-                    ),
-                    color: greyMain),
-              ),
-            ),
-          ),
-        ],
+        // actions: [
+        //   InkWell(
+        //     child: Container(
+        //       margin: EdgeInsets.only(
+        //           left: marginHorizontal / 20, top: 10, bottom: 10),
+        //       child: Material(
+        //         color: Color(0xFFEEEEEE),
+        //         shape: CircleBorder(),
+        //         child: IconButton(
+        //             onPressed: () {},
+        //             icon: ImageIcon(
+        //               AssetImage(
+        //                 "assets/heart.png",
+        //               ),
+        //               size: 18,
+        //             ),
+        //             color: greyMain),
+        //       ),
+        //     ),
+        //   ),
+        //   InkWell(
+        //     child: Container(
+        //       margin: EdgeInsets.only(
+        //           left: marginHorizontal / 20, top: 10, bottom: 10, right: 15),
+        //       child: Material(
+        //         color: Color(0xFFEEEEEE),
+        //         shape: CircleBorder(),
+        //         child: IconButton(
+        //             onPressed: () {},
+        //             icon: ImageIcon(
+        //               AssetImage(
+        //                 "assets/search.png",
+        //               ),
+        //               size: 18,
+        //             ),
+        //             color: greyMain),
+        //       ),
+        //     ),
+        //   ),
+        // ],
       ),
       body: ListView(
         shrinkWrap: true,
@@ -150,6 +155,7 @@ class _AllBarbermanState extends State<AllBarberman>
               ],
             ),
             child: TabBar(
+              labelStyle: textStyle,
               isScrollable: false,
               unselectedLabelColor: textAccent,
               labelColor: primary,
@@ -271,7 +277,7 @@ class _AllBarbermanState extends State<AllBarberman>
                     child: Text(
                       _mitra.name!,
                       textAlign: TextAlign.left,
-                      overflow: TextOverflow.fade,
+                      overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: TextStyle(
                           fontWeight: FontWeight.w500,
@@ -286,19 +292,21 @@ class _AllBarbermanState extends State<AllBarberman>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
-                          flex: 4,
-                          child: Text(
-                            _mitra.workshop ?? "Workshop",
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.fade,
-                            maxLines: 1,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                color: textAccent,
-                                fontSize: tinggi / lebar * 7),
-                          ),
-                        ),
+                        _mitra.workshop != null
+                            ? Expanded(
+                                flex: 4,
+                                child: Text(
+                                  _mitra.workshop!,
+                                  textAlign: TextAlign.left,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      color: textAccent,
+                                      fontSize: tinggi / lebar * 7),
+                                ),
+                              )
+                            : SizedBox(),
                         sum != 0
                             ? Expanded(
                                 flex: 2,
@@ -385,14 +393,23 @@ class _AllBarbermanState extends State<AllBarberman>
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: CachedNetworkImage(
-                              imageUrl: "https://omahdilit.site/images/" +
-                                  _mitra.photo.toString(),
-                              width: lebar / 4.7,
-                              height: lebar / 4.7,
-                              fit: BoxFit.cover,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (_) => ViewImage(
+                                          image: _mitra.photo.toString())));
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: CachedNetworkImage(
+                                imageUrl: "https://omahdilit.site/images/" +
+                                    _mitra.photo.toString(),
+                                width: lebar / 4.7,
+                                height: lebar / 4.7,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           Container(
@@ -404,95 +421,84 @@ class _AllBarbermanState extends State<AllBarberman>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "${_mitra.name}",
-                                      textAlign: TextAlign.left,
-                                      overflow: TextOverflow.fade,
-                                      maxLines: 1,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        color: textColor,
-                                        fontSize: tinggi / lebar * 7,
-                                      ),
-                                    ),
-                                    snapshot.hasData
-                                        ? _totalReview != 0
-                                            ? Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.star,
-                                                    color: Colors.amber,
-                                                    size: lebar / 23,
-                                                  ),
-                                                  Text(
-                                                    _rating,
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color: textAccent,
-                                                        fontSize:
-                                                            tinggi / lebar * 7),
-                                                  ),
-                                                  Text(
-                                                    " dari $_totalReview review",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: textAccent,
-                                                        fontSize:
-                                                            tinggi / lebar * 5),
-                                                  ),
-                                                ],
-                                              )
-                                            : Container()
-                                        : Shimmer.fromColors(
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.star,
-                                                  color: Colors.amber,
-                                                  size: lebar / 23,
-                                                ),
-                                                Text(
-                                                  "  ",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: textAccent,
-                                                      fontSize:
-                                                          tinggi / lebar * 7),
-                                                ),
-                                                Text(
-                                                  "       ",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: textAccent,
-                                                      fontSize:
-                                                          tinggi / lebar * 5),
-                                                ),
-                                              ],
-                                            ),
-                                            baseColor: Colors.grey,
-                                            highlightColor:
-                                                Colors.grey.shade300,
-                                          ),
-                                  ],
-                                ),
                                 Text(
-                                  _mitra.workshop.toString(),
+                                  "${_mitra.name}",
                                   textAlign: TextAlign.left,
-                                  overflow: TextOverflow.fade,
+                                  overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      color: textAccent,
-                                      fontSize: tinggi / lebar * 7),
-                                )
+                                    fontWeight: FontWeight.w500,
+                                    color: textColor,
+                                    fontSize: tinggi / lebar * 7,
+                                  ),
+                                ),
+                                _mitra.workshop != null
+                                    ? Text(
+                                        _mitra.workshop!,
+                                        textAlign: TextAlign.left,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w300,
+                                            color: textAccent,
+                                            fontSize: tinggi / lebar * 7),
+                                      )
+                                    : SizedBox(),
+                                snapshot.hasData
+                                    ? _totalReview != 0
+                                        ? Row(
+                                            children: [
+                                              Icon(
+                                                Icons.star,
+                                                color: Colors.amber,
+                                                size: lebar / 23,
+                                              ),
+                                              Text(
+                                                _rating,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: textAccent,
+                                                    fontSize:
+                                                        tinggi / lebar * 7),
+                                              ),
+                                              Text(
+                                                " dari $_totalReview review",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    color: textAccent,
+                                                    fontSize:
+                                                        tinggi / lebar * 5),
+                                              ),
+                                            ],
+                                          )
+                                        : SizedBox()
+                                    : Shimmer.fromColors(
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.star,
+                                              color: Colors.amber,
+                                              size: lebar / 23,
+                                            ),
+                                            Text(
+                                              "  ",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: textAccent,
+                                                  fontSize: tinggi / lebar * 7),
+                                            ),
+                                            Text(
+                                              "       ",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                  color: textAccent,
+                                                  fontSize: tinggi / lebar * 5),
+                                            ),
+                                          ],
+                                        ),
+                                        baseColor: Colors.grey,
+                                        highlightColor: Colors.grey.shade300,
+                                      ),
                               ],
                             ),
                           ),
@@ -540,79 +546,94 @@ class _AllBarbermanState extends State<AllBarberman>
                                             ),
                                           );
                                         },
-                                        child: Container(
-                                          width: lebar / 2.35,
-                                          height: tinggi,
-                                          alignment: Alignment.centerLeft,
+                                        child: Card(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
                                           margin: EdgeInsets.symmetric(
                                               horizontal:
                                                   marginHorizontal / 1.5,
                                               vertical: marginVertical / 1.7),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: CachedNetworkImageProvider(
-                                                "https://omahdilit.site/images/" +
-                                                    _modelHair.photo1!,
+                                          elevation: 2,
+                                          child: Container(
+                                            width: lebar / 3.1,
+                                            height: tinggi,
+                                            alignment: Alignment.centerLeft,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image:
+                                                    CachedNetworkImageProvider(
+                                                  "https://omahdilit.site/images/" +
+                                                      _modelHair.photo1!,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                child: SizedBox(),
-                                              ),
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: marginHorizontal,
-                                                  vertical: marginVertical / 3,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  child: SizedBox(),
                                                 ),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.black
-                                                      .withOpacity(.3),
-                                                  borderRadius:
-                                                      BorderRadius.vertical(
-                                                    bottom: Radius.circular(12),
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal:
+                                                        marginHorizontal,
+                                                    vertical:
+                                                        marginVertical / 3,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.black
+                                                        .withOpacity(.3),
+                                                    borderRadius:
+                                                        BorderRadius.vertical(
+                                                      bottom:
+                                                          Radius.circular(12),
+                                                    ),
+                                                  ),
+                                                  width: lebar,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        "${_modelHair.namaModel}",
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                        maxLines: 1,
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color: Colors.white,
+                                                            fontSize: tinggi /
+                                                                lebar *
+                                                                8),
+                                                      ),
+                                                      Text(
+                                                        _modelHair
+                                                                .reviews!.length
+                                                                .toString() +
+                                                            " review",
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w300,
+                                                            color: Colors.white,
+                                                            fontSize: tinggi /
+                                                                lebar *
+                                                                7),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
-                                                width: lebar,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      "${_modelHair.namaModel}",
-                                                      textAlign: TextAlign.left,
-                                                      maxLines: 1,
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          color: Colors.white,
-                                                          fontSize: tinggi /
-                                                              lebar *
-                                                              8),
-                                                    ),
-                                                    Text(
-                                                      _modelHair.reviews!.length
-                                                              .toString() +
-                                                          " review",
-                                                      textAlign: TextAlign.left,
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w300,
-                                                          color: Colors.white,
-                                                          fontSize: tinggi /
-                                                              lebar *
-                                                              7),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       );

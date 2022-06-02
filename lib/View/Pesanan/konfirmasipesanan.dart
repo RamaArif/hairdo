@@ -5,6 +5,7 @@ import 'package:dotted_line/dotted_line.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:omahdilit/Api/api_provider.dart';
@@ -19,6 +20,7 @@ import 'package:omahdilit/bloc/transaksi/transaksi_bloc.dart';
 import 'package:omahdilit/constant.dart';
 import 'package:omahdilit/model/listalamat.dart';
 import 'package:omahdilit/model/transaksi.dart';
+import 'package:omahdilit/viewimage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -49,16 +51,19 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
 
   @override
   void initState() {
-
     context.read<CreateTransaksiBloc>().add(GetCustomer());
     super.initState();
     if (widget.barberman != null) {
       _setbarberman = true;
       // _barberman = widget.barberman;
-      context.read<CreateTransaksiBloc>().add(MitraAddedEvent(widget.barberman));
+      context
+          .read<CreateTransaksiBloc>()
+          .add(MitraAddedEvent(widget.barberman));
     } else if (widget.modelHair != null) {
       _setmodelhair = true;
-      context.read<CreateTransaksiBloc>().add(ModelAddedEvent(widget.modelHair));
+      context
+          .read<CreateTransaksiBloc>()
+          .add(ModelAddedEvent(widget.modelHair));
     }
   }
 
@@ -149,7 +154,9 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
                 onTap: () {
                   // print(jsonEncode(_transaksi));
                   if (_isCompleted) {
-                    context.read<TransaksiBloc>().add(CreateOrderEvent(_transaksi));
+                    context
+                        .read<TransaksiBloc>()
+                        .add(CreateOrderEvent(_transaksi));
                   }
                 },
                 child: Container(
@@ -184,7 +191,10 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Color(0xFF6F6F6F)),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.white,
+          statusBarIconBrightness: Brightness.dark,
+        ),
         title: Text(
           "Konfirmasi Pesanan",
           style: TextStyle(
@@ -352,14 +362,26 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
                           ? Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: CachedNetworkImage(
-                                    imageUrl: "https://omahdilit.site/images/" +
-                                        _transaksi.mitra!.photo.toString(),
-                                    height: tinggi / 8,
-                                    width: tinggi / 8,
-                                    fit: BoxFit.cover,
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                            builder: (_) => ViewImage(
+                                                image: _transaksi.mitra!.photo
+                                                    .toString())));
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          "https://omahdilit.site/images/" +
+                                              _transaksi.mitra!.photo
+                                                  .toString(),
+                                      height: tinggi / 8,
+                                      width: tinggi / 8,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                                 Container(
@@ -381,15 +403,21 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
                                           ),
                                         ),
                                       ),
-                                      Text(
-                                        _transaksi.mitra!.workshop.toString(),
-                                        style: TextStyle(
-                                          fontSize: tinggi / lebar * 7,
-                                          color: textAccent,
-                                        ),
-                                      ),
-                                      _transaksi.mitra!.rating == 0
-                                          ? Text("")
+                                      _transaksi.mitra!.workshop != null
+                                          ? Text(
+                                              _transaksi.mitra!.workshop!,
+                                              style: TextStyle(
+                                                fontSize: tinggi / lebar * 7,
+                                                color: textAccent,
+                                              ),
+                                            )
+                                          : SizedBox(),
+                                      _transaksi.mitra!.rating == null
+                                          ? Text(
+                                              "Belum ada review",
+                                              style: textStyle.copyWith(
+                                                  color: greyLight),
+                                            )
                                           : Row(
                                               children: [
                                                 Icon(
@@ -507,14 +535,25 @@ class _KonfirmasiPesananState extends State<KonfirmasiPesanan> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: CachedNetworkImage(
-                                    imageUrl: "https://omahdilit.site/images/" +
-                                        _transaksi.model!.photo1!,
-                                    height: tinggi / 7,
-                                    width: tinggi / 7,
-                                    fit: BoxFit.cover,
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                            builder: (_) => ViewImage(
+                                                image: _transaksi.mitra!.photo
+                                                    .toString())));
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          "https://omahdilit.site/images/" +
+                                              _transaksi.model!.photo1!,
+                                      height: tinggi / 7,
+                                      width: tinggi / 7,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                                 Expanded(

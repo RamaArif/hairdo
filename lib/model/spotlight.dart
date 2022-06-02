@@ -1,3 +1,26 @@
+class ListSpotlight {
+  List<Spotlight>? spotlight;
+
+  ListSpotlight({this.spotlight});
+
+  ListSpotlight.fromJson(Map<String, dynamic> json) {
+    if (json['spotlight'] != null) {
+      spotlight = <Spotlight>[];
+      json['spotlight'].forEach((v) {
+        spotlight!.add(new Spotlight.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.spotlight != null) {
+      data['spotlight'] = this.spotlight!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
 class Spotlight {
   int? id;
   String? title;

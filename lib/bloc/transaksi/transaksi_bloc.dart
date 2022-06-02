@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:omahdilit/Api/api_provider.dart';
+import 'package:omahdilit/model/review.dart';
 import 'package:omahdilit/model/transaksi.dart';
 
 part 'transaksi_event.dart';
@@ -30,8 +31,12 @@ class TransaksiBloc extends Bloc<TransaksiEvent, TransaksiState> {
     on<FetchOrder>((event, emit) async {
       try {
         emit(TransaksiLoading());
-        _transaksi = await _apiProvider.detailTransaksi(event.transaksi.toString());
-        emit(TransaksiLoaded(_transaksi!));
+        await _apiProvider
+            .detailTransaksi(event.transaksi.toString())
+            .then((value) {
+          _transaksi = value;
+          emit(TransaksiLoaded(_transaksi!));
+        });
       } catch (e) {
         print(e);
         throw Exception(e);
@@ -44,6 +49,20 @@ class TransaksiBloc extends Bloc<TransaksiEvent, TransaksiState> {
           emit(TransaksiLoading());
           _transaksi = await _apiProvider.cancelTransaksi(event.transaksi);
           emit(TransaksiLoaded(_transaksi!));
+        } catch (e) {
+          print(e);
+          throw Exception(e);
+        }
+      },
+    );
+    on<PostReview>(
+      (event, emit) async {
+        try {
+          emit(TransaksiLoading());
+          await _apiProvider.createReview(event.reviewModel).then((value) {
+            _transaksi!.review = value;
+            emit(TransaksiLoaded(_transaksi!));
+          });
         } catch (e) {
           print(e);
           throw Exception(e);

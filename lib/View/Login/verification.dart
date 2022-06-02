@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:omahdilit/Api/api_provider.dart';
+import 'package:omahdilit/Api/shared_prefs_services.dart';
 import 'package:omahdilit/View/Login/login.dart';
 import 'package:omahdilit/View/Login/register.dart';
 import 'package:omahdilit/bloc/profile/profile_bloc.dart';
@@ -17,12 +18,19 @@ import 'package:omahdilit/constant.dart';
 import 'package:omahdilit/loading.dart';
 import 'package:omahdilit/model/customer.dart';
 import 'package:omahdilit/navbar.dart';
-import 'package:pinput/pin_put/pin_put.dart';
+import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Verification extends StatefulWidget {
-  Verification({Key? key, required this.code, required this.phone})
-      : super(key: key);
+  final bool isEdit;
+  Customer? customer;
+  Verification({
+    Key? key,
+    required this.code,
+    required this.phone,
+    this.isEdit = false,
+    this.customer,
+  }) : super(key: key);
   final String code, phone;
   @override
   VerificationState createState() => VerificationState();
@@ -38,13 +46,6 @@ class VerificationState extends State<Verification> {
       GlobalKey<ScaffoldState>(debugLabel: "scaffold-verify-phone");
 
   String? _verificationId;
-
-  BoxDecoration get _pinPutDecoration {
-    return BoxDecoration(
-      borderRadius: BorderRadius.circular(5.0),
-      color: secondary,
-    );
-  }
 
   void startTimer() {
     const oneSec = const Duration(seconds: 1);
@@ -84,6 +85,24 @@ class VerificationState extends State<Verification> {
 
   @override
   Widget build(BuildContext context) {
+    final defaultPinTheme = PinTheme(
+      height: lebar / 8,
+      width: lebar / 8,
+      margin: EdgeInsets.symmetric(horizontal: 2),
+      textStyle: textStyle.copyWith(
+        color: primary,
+        fontSize: tinggi / lebar * 10,
+        fontWeight: FontWeight.w500,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: secondary,
+      ),
+    );
+
+    final focusedPinTheme =
+        defaultPinTheme.copyDecorationWith(color: Colors.transparent);
+
     return BlocConsumer<ProfileBloc, ProfileState>(
       listener: (context, state) {
         // TODO: implement listener
@@ -103,7 +122,9 @@ class VerificationState extends State<Verification> {
           return LoadingBuilder();
         } else {
           return Scaffold(
+            backgroundColor: Colors.white,
             bottomSheet: Container(
+              color: Colors.white,
               height: tinggi / 10,
               child: Column(
                 children: [
@@ -177,27 +198,37 @@ class VerificationState extends State<Verification> {
                     Container(
                       alignment: Alignment.center,
                       width: lebar,
-                      child: PinPut(
+                      child: Pinput(
                         autofocus: true,
                         controller: _otpController,
-                        onChanged: (val) {
-                          if (val.length == 6) {
-                            _signedIn(val);
-                          }
+                        onCompleted: (val) {
+                          _signedIn(val);
                         },
-                        fieldsCount: 6,
-                        eachFieldPadding: EdgeInsets.symmetric(
-                          horizontal: marginHorizontal,
-                          vertical: marginVertical / 2,
+                        length: 6,
+                        defaultPinTheme: defaultPinTheme,
+                        focusedPinTheme: focusedPinTheme,
+                        showCursor: true,
+                        cursor: Container(
+                          height: lebar / 8,
+                          width: lebar / 8,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: secondary,
+                          ),
                         ),
-                        submittedFieldDecoration: _pinPutDecoration,
-                        selectedFieldDecoration: _pinPutDecoration,
-                        followingFieldDecoration: _pinPutDecoration,
-                        pinAnimationType: PinAnimationType.scale,
-                        textStyle: TextStyle(
-                          color: primary,
-                          fontSize: tinggi / lebar * 9,
-                        ),
+
+                        // eachFieldPadding: EdgeInsets.symmetric(
+                        //   horizontal: marginHorizontal,
+                        //   vertical: marginVertical / 2,
+                        // ),
+                        // submittedFieldDecoration: _pinPutDecoration,
+                        // selectedFieldDecoration: _pinPutDecoration,
+                        // followingFieldDecoration: _pinPutDecoration,
+                        // pinAnimationType: PinAnimationType.scale,
+                        // textStyle: TextStyle(
+                        //   color: primary,
+                        //   fontSize: tinggi / lebar * 9,
+                        // ),
                       ),
                     ),
                     SizedBox(
@@ -218,6 +249,9 @@ class VerificationState extends State<Verification> {
                           if (_detik == 0) {
                             startTimer();
                             _verifyPhoneNumber();
+                            setState(() {
+                              _detik = 30;
+                            });
                           }
                         },
                         child: Text(
@@ -274,17 +308,29 @@ class VerificationState extends State<Verification> {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     await _auth.signInWithCredential(credential).catchError((error) {
+      print(error);
       if (error.code == 'invalid-verification-code') {
         print("OTP salah");
         EasyLoading.showError("Kode OTP salah atau sudah expired");
       }
+    }).then((user) {
       print("Otp benar");
-      FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-      firebaseMessaging.getToken().then((value) async {
-        context
-            .read<ProfileBloc>()
-            .add(SignIn(widget.phone, widget.code, value!));
-      });
+      if (widget.isEdit) {
+        context.read<ProfileBloc>().add(UpdateProfile(widget.customer!));
+        Navigator.pop(context);
+      } else {
+        FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+        firebaseMessaging.getToken().then((value) async {
+          if (value != null) {
+            print(value);
+            SharedPrefsServices().savePushToken(value);
+            SharedPrefsServices().saveUid(user.user!.uid);
+            context
+                .read<ProfileBloc>()
+                .add(SignIn(widget.phone, widget.code, value, user.user!.uid));
+          }
+        });
+      }
     });
   }
 }
